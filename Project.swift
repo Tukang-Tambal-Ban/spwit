@@ -46,7 +46,7 @@ let project = Project(
             product: .unitTests,
             bundleId: bundleId(for: "\(appName)Tests"),
             infoPlist: .default,
-            sources: ["spwit/Tests/**"],
+            // sources: ["spwit/Tests/**"],
             resources: [],
             dependencies: [.target(name: appName)]
         ),
