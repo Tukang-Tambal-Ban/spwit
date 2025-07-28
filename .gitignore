@@ -5,6 +5,9 @@
 .LSOverride
 .env
 
+#vscode
+.vscode
+
 # Icon must end with two
 Icon
 
