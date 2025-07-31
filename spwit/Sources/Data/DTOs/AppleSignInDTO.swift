@@ -1,4 +1,4 @@
-struct AppleSignInRequest: Codable {
+struct SignInRequest: Codable {
     let identityToken: String
     let appleUserId: String
 
@@ -6,9 +6,14 @@ struct AppleSignInRequest: Codable {
         case identityToken = "identity_token"
         case appleUserId = "apple_user_id"
     }
+
+    init(from entity: SignInRequestEntity) {
+        self.identityToken = entity.identityToken
+        self.appleUserId = entity.appleUserId
+    }
 }
 
-struct AppleSignInResponse: Codable {
+struct SignInResponse: Codable {
     let success: Bool
     let token: String
     let user: User

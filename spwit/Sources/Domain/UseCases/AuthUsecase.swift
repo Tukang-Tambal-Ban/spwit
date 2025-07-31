@@ -6,43 +6,22 @@
 //
 
 protocol AuthUsecase {
-    func searchMeals(key: String) async throws -> Result<[MealEntity], Error>
-    func filterMealsByArea(from meals: [MealEntity], area : String) async throws -> [MealEntity]
-    func getMealAreas() async throws -> Result<[String], Error>
+    func signIn(payload: SignInRequestEntity) async throws -> Result<SignInEntity, Error>
 }
 
-class MealsUseCaseImpl: AuthUsecase {
-    private let mealsRepository: MealsRepository
+class AuthUsecaseImpl: AuthUsecase {
+    private let authRepository: AuthRepository
 
-    init(mealsRepository: MealsRepository) {
-        self.mealsRepository = mealsRepository
+    init(authRepository: AuthRepository) {
+        self.authRepository = authRepository
     }
 
-    func searchMeals(key: String) async -> Result<[MealEntity], Error> {
+    func signIn(payload: SignInRequestEntity) async -> Result<SignInEntity, Error> {
         do {
-            let mealsDTO = try await mealsRepository.searchMeals(key: key)
-            let meals = mealsDTO.compactMap { MealEntity(from: $0) }
-            return .success(meals)
-        } catch {
-            return .failure(error)
-        }
-    }
-    
-    func filterMealsByArea(from meals: [MealEntity], area: String) async throws -> [MealEntity] {
-        await Task.yield() // Ensure the task is non-blocking
-        
-        let filteredMeals = meals.filter { $0.area.lowercased() == area.lowercased() }
-        
-        // Return the result
-        return filteredMeals
-    }
-    
-    func getMealAreas() async throws -> Result<[String], any Error> {
-        do {
-            let areasDTO = try await mealsRepository.getAreas()
-            
-            let areas = areasDTO.compactMap{ AreaEntity(from: $0).area }
-            return .success(areas)
+            let signInRequest = SignInRequest(from: payload)
+            let signInDTO = try await authRepository.signIn(payload: signInRequest)
+            let signInEntity = SignInEntity(from: signInDTO)
+            return .success(signInEntity)
         } catch {
             return .failure(error)
         }
