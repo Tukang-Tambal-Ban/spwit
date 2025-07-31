@@ -6,9 +6,8 @@
 //
 
 final class DIContainer {
-    lazy var apiService: APIService = APIServiceImpl()
-    lazy var mealsRepository: MealsRepository = MealsRepositoryImpl(apiService: apiService)
-    lazy var mealsUseCase: MealsUseCase = MealsUseCaseImpl(mealsRepository: mealsRepository)
+    lazy var authRepository: AuthRepository = AuthRepositoryImpl()
+    lazy var authUsecase: AuthUsecase = AuthUsecaseImpl(authRepository: authRepository)
     
     // Singleton instance to ensure centralized DI management
     static let shared = DIContainer()

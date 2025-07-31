@@ -6,16 +6,16 @@
 //
 
 protocol AuthRepository {
-    func signIn(payload: AppleSignInRequest) async throws -> AppleSignInResponse
+    func signIn(payload: SignInRequest) async throws -> SignInResponse
 }
 
-class SignInRepositoryImpl: AuthRepository {
+class AuthRepositoryImpl: AuthRepository {
     private let apiManager: APIManager = APIManager.shared
     
-    func signIn(payload: AppleSignInRequest) async throws -> AppleSignInResponse {
+    func signIn(payload: SignInRequest) async throws -> SignInResponse {
         
         return try await withCheckedThrowingContinuation { continuation in
-            apiManager.call(type: AuthEndpoint.signIn, params: payload) { (result: Result<AppleSignInResponse, Error>) in
+            apiManager.call(type: AuthEndpoint.signIn, params: payload) { (result: Result<SignInResponse, Error>) in
                 switch result {
                 case .success(let signInResponse):
                     continuation.resume(returning: signInResponse)

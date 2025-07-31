@@ -14,7 +14,7 @@ protocol EndPointType {
     var httpMethod: HTTPMethod { get }
     var headers: HTTPHeaders? { get }
     var url: URL { get }
-    var encoding: ParameterEncoding { get }
+    var encoder: ParameterEncoder{ get }
     var version: String { get }
     
 }
