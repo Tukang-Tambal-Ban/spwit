@@ -124,3 +124,45 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
     }
 }
 
+
+#if DEBUG
+import SwiftUI
+
+struct HomePageViewPreview: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> HomePageViewController {
+        return HomePageViewController()
+    }
+    func updateUIViewController(_ uiViewController: HomePageViewController, context: Context) {}
+}
+
+struct HomePageViewViewController_Preview: PreviewProvider {
+    static var previews: some View {
+        HomePageViewPreview()
+            .edgesIgnoringSafeArea(.all)
+            .previewDisplayName("UIKit: Sign In Screen")
+    }
+}
+#endif
+
+//
+//#if DEBUG
+//import SwiftUI
+//
+//struct HomePageViewControllerPreview: UIViewControllerRepresentable {
+//    func makeUIViewController(context: Context) -> HomePageViewController {
+//        let vc = HomePageViewController()
+//        // Optionally, inject a mock presenter if needed for testing
+//        return vc
+//    }
+//    func updateUIViewController(_ uiViewController: HomePageViewController, context: Context) {}
+//}
+//
+//struct HomePageViewController_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomePageViewControllerPreview()
+//            .edgesIgnoringSafeArea(.all)
+//            .previewDisplayName("UIKit: Home Page")
+//    }
+//}
+//#endif
+//
