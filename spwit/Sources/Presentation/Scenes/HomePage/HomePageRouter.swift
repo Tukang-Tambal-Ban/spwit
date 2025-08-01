@@ -11,20 +11,26 @@ protocol HomePageRouterProtocol: AnyObject {
     func navigateToProfile()
 }
 
-class HomePageRouter: HomePageRouterProtocol {
-    weak var viewController: UIViewController?
+class HomePageRouter: HomePageRouterProtocol, RouterInjectable {
+    var router: Router?
+    private weak var viewController: UIViewController?
     
-    static func assembleModule() -> UIViewController {
+    init(router : Router, viewController: UIViewController) {
+        self.router = router
+        self.viewController = viewController
+    }
+    
+    static func createModule(router: Router, for signIn : SignInEntity) -> UIViewController {
         let view = HomePageViewController()
-        let presenter = HomePagePresenter()
         let interactor = HomePageInteractor()
-        let router = HomePageRouter()
+        let router = HomePageRouter(router: router, viewController: view)
+        let presenter = HomePagePresenter(
+            view: view,
+            interactor: interactor,
+            router: router
+        )
         
         view.presenter = presenter
-        presenter.view = view
-        presenter.interactor = interactor
-        presenter.router = router
-        router.viewController = view
         
         return view
     }

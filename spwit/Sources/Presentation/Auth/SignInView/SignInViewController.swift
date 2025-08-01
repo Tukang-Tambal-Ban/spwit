@@ -8,10 +8,17 @@
 
 import UIKit
 
+protocol SignInViewProtocol: AnyObject {
+    func showResult(from entity: SignInEntity)
+    func showError(_ error: Error)
+    func showLoading()
+    func hideLoading()
+}
 class SignInViewController: UIViewController, SignInViewProtocol {
     var presenter: SignInPresenterProtocol?
 
     private let signInButton = UIButton(type: .system)
+    private let activityIndicator = UIActivityIndicatorView()
     private let resultLabel = UILabel()
     private let ctaLabel = UILabel()
     private let logoApp =  UIImageView()
@@ -23,20 +30,20 @@ class SignInViewController: UIViewController, SignInViewProtocol {
 
     private func setupUI() {
         
-        view.backgroundColor = UIColor(hex: "#0F213C")
+        view.backgroundColor = .darkBlue
         
-        logoApp.image = UIImage(named: "spwit_logo")
+        logoApp.image = Images.spwitLogo
         logoApp.contentMode = .scaleAspectFit
         logoApp.translatesAutoresizingMaskIntoConstraints = false
         
         ctaLabel.text = "Let's get started"
-        ctaLabel.textColor = UIColor(hex: "A4F000")
+        ctaLabel.applyStyle(Fonts.callout.regular, color: .lightGreen)
         ctaLabel.textAlignment = .center
         ctaLabel.numberOfLines = 0
         ctaLabel.translatesAutoresizingMaskIntoConstraints = false
         
 //        sign in Button
-        let appleIcon = UIImage(systemName: "apple.logo")
+        let appleIcon = Icons.appleLogo
         signInButton.setImage(appleIcon, for: .normal)
         signInButton.tintColor = .black // or your preferred color
         signInButton.setTitle(" Sign In With Apple", for: .normal)
@@ -47,15 +54,10 @@ class SignInViewController: UIViewController, SignInViewProtocol {
         signInButton.clipsToBounds = true
         signInButton.addTarget(self, action: #selector(signInTapped), for: .touchUpInside)
         signInButton.translatesAutoresizingMaskIntoConstraints = false
-
-
- 
         
-        // Setup Result Label
-        resultLabel.textAlignment = .center
-        resultLabel.numberOfLines = 0
-        resultLabel.translatesAutoresizingMaskIntoConstraints = false
-
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .black
+        
         view.addSubview(ctaLabel)
         view.addSubview(signInButton)
         view.addSubview(resultLabel)
@@ -92,15 +94,7 @@ class SignInViewController: UIViewController, SignInViewProtocol {
     }
 
     func showResult(from entity: SignInEntity) {
-        resultLabel.text = """
-        ✅ Sign In Success
-
-        User ID: \(entity.userId)
-        Apple ID: \(entity.appleId)
-        Username: \(entity.username)
-        Email: \(entity.email)
-        Token: \(entity.token.prefix(10))...
-        """
+        presenter?.navigateToHome(signInEntity: entity)
     }
 
     func showError(_ error: Error) {
@@ -108,11 +102,28 @@ class SignInViewController: UIViewController, SignInViewProtocol {
     }
 
     func showLoading() {
-        resultLabel.text = "🔄 Signing in..."
+        signInButton.setTitle(nil, for: .normal)
+        signInButton.setImage(nil, for: .normal)
+        
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        signInButton.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: signInButton.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: signInButton.centerYAnchor)
+        ])
+        
+        activityIndicator.startAnimating()
+        signInButton.isEnabled = false
     }
 
     func hideLoading() {
-        // You could reset or do nothing
+        activityIndicator.stopAnimating()
+        activityIndicator.removeFromSuperview()
+        
+        signInButton.setImage(Icons.appleLogo, for: .normal)
+        signInButton.setTitle(" Sign In With Apple", for: .normal)
+        signInButton.isEnabled = true
     }
     
 }
