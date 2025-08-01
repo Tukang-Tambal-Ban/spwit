@@ -1,7 +1,7 @@
 import ProjectDescription
 
 let baseAppBundleId: String = Environment.bundleId.getString(default: "com.ada.il")
-let appName: String = "spwit"
+let appName: String = "Spwit"
 
 func bundleId(for target: String) -> String {
     return "\(baseAppBundleId).\(target)"
