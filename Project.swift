@@ -17,7 +17,10 @@ let project = Project(
             bundleId: bundleId(for: appName),
             infoPlist: .extendingDefault(
                 with: [
-                    // "UILaunchStoryboardName": "LaunchScreen",
+                    "UILaunchStoryboardName": "LaunchScreen",
+                    "UILaunchScreen": [
+                        "UIImageName": "LaunchScreen"
+                    ],
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": false,
                         "UISceneConfigurations": [
