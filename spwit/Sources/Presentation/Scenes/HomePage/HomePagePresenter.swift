@@ -4,6 +4,29 @@
 //
 //  Created by Shafa Tiara Tsabita Himawan on 31/07/25.
 //
+import UIKit
 
-import Foundation
+protocol HomePagePresenterProtocol: AnyObject{
+    func viewDidLoad()
+    func didTapAddButton()
+    func didTapProfileButton()
+}
 
+class HomePagePresenter: HomePagePresenterProtocol {
+    weak var view: HomePageViewProtocol?
+    var interactor: HomePageInteractorProtocol?
+    var router: HomePageRouterProtocol?
+    
+    func viewDidLoad() {
+        interactor?.fetchInitialState()
+    }
+    
+    func didTapAddButton() {
+        router?.navigateToCreateExpenses()
+    }
+    
+    func didTapProfileButton() {
+        router?.navigateToProfile()
+    }
+    
+}
