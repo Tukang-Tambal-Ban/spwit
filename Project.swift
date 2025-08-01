@@ -19,7 +19,7 @@ let project = Project(
                 with: [
                     "UILaunchStoryboardName": "LaunchScreen",
                     "UILaunchScreen": [
-                        "UIImageName": "LaunchScreen"
+                        "UIImageName": ""
                     ],
                     "UIApplicationSceneManifest": [
                         "UIApplicationSupportsMultipleScenes": false,
