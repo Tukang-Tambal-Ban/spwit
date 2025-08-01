@@ -17,6 +17,17 @@ class HomePagePresenter: HomePagePresenterProtocol {
     var interactor: HomePageInteractorProtocol?
     var router: HomePageRouterProtocol?
     
+    init(
+        view: HomePageViewProtocol,
+        interactor: HomePageInteractorProtocol,
+        router: HomePageRouterProtocol
+    ) {
+        self.view = view
+        self.interactor = interactor
+        self.router = router
+    }
+    
+    
     func viewDidLoad() {
         interactor?.fetchInitialState()
     }

@@ -6,15 +6,9 @@
 //
 import Foundation
 
-protocol SignInViewProtocol: AnyObject {
-    func showResult(from entity: SignInEntity)
-    func showError(_ error: Error)
-    func showLoading()
-    func hideLoading()
-}
-
 protocol SignInPresenterProtocol: Presentable {
     func signInTapped()
+    func navigateToHome(signInEntity: SignInEntity)
 }
 
 class SignInPresenter: SignInPresenterProtocol {
@@ -45,5 +39,9 @@ class SignInPresenter: SignInPresenterProtocol {
                 }
             }
         }
+    }
+    
+    func navigateToHome(signInEntity: SignInEntity) {
+        router.navigateToHomePage(signInEntity)
     }
 }
