@@ -1,5 +1,5 @@
 //
-//  AddExpansesPresenter.swift
+//  AddExpensesPresenter.swift
 //  Spwit
 //
 //  Created by Muhammad Rifqi Syatria on 8/1/25.
@@ -7,18 +7,18 @@
 
 import UIKit
 
-protocol AddExpansesViewProtocol : AnyObject {
+protocol AddExpensesViewProtocol : AnyObject {
     func didNextTapped()
     func didBackTapped()
     func viewDidLoad()
 }
 
-class AddExpansesPresenter : AddExpansesViewProtocol {
+class AddExpensesPresenter : AddExpensesViewProtocol {
     
     
-    weak var view : AddExpansesViewProtocol?
-    var router : AddExpansesRouterProtocol?
-    var interactors : AddExpansesInteractorProtocol?
+    weak var view : AddExpensesViewProtocol?
+    var router : AddExpensesRouterProtocol?
+    var interactors : AddExpensesInteractorProtocol?
     
     func didBackTapped() {
         if let vc = view as? UIViewController {

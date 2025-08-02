@@ -7,13 +7,13 @@
 
 import UIKit
 
-protocol AddExpansesView: AnyObject {
+protocol AddExpensesView: AnyObject {
     func showError(_ message: String)
     func showLoading()
     func hideLoading()
 }
 
-class AddExpansesViewController : UIViewController, AddExpansesViewProtocol {
+class AddExpensesViewController : UIViewController, AddExpensesViewProtocol {
     func didNextTapped() {
         
     }
@@ -23,7 +23,7 @@ class AddExpansesViewController : UIViewController, AddExpansesViewProtocol {
     }
     
     
-    var presenter = AddExpansesPresenter()
+    var presenter = AddExpensesPresenter()
     
     
     override func viewDidLoad() {
@@ -49,7 +49,7 @@ class AddExpansesViewController : UIViewController, AddExpansesViewProtocol {
         view.addSubview(amountExpanse)
         
 //        Navbar
-        title = "Add Expanses"
+        title = "Add  Expenses"
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.titleTextAttributes = [
@@ -113,20 +113,20 @@ class AddExpansesViewController : UIViewController, AddExpansesViewProtocol {
 #if DEBUG
 import SwiftUI
 
-struct AddExpansesPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> AddExpansesViewController {
-        return AddExpansesViewController()
+struct AddExpensesPreview: UIViewControllerRepresentable {
+    func makeUIViewController(context: Context) -> AddExpensesViewController {
+        return AddExpensesViewController()
     }
-    func updateUIViewController(_ uiViewController: AddExpansesViewController, context: Context) {}
+    func updateUIViewController(_ uiViewController: AddExpensesViewController, context: Context) {}
 }
 
-struct AddExpansesViewController_Previews: PreviewProvider {
+struct AddExpensesViewController_Previews: PreviewProvider {
     static var previews: some View {
-        AddExpansesPreview()
+        AddExpensesPreview()
             .edgesIgnoringSafeArea(.all)
             .previewDisplayName("UIKit: Sign In Screen")
             .navigationBarTitleDisplayMode(.large)
-            .navigationTitle(Text("Add Expanses"))
+            .navigationTitle(Text("Add  Expenses"))
             
     }
 }

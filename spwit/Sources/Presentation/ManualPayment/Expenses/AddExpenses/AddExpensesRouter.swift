@@ -1,5 +1,5 @@
 //
-//  ExpansesRouter.swift
+//   ExpensesRouter.swift
 //  Spwit
 //
 //  Created by Muhammad Rifqi Syatria on 8/1/25.
@@ -7,7 +7,7 @@
 import UIKit
 
 
-protocol AddExpansesRouterProtocol : AnyObject {
+protocol AddExpensesRouterProtocol : AnyObject {
     
     func navigateBack(from view : UIViewController)
     func navigateNextForm(from view : UIViewController)
@@ -16,7 +16,7 @@ protocol AddExpansesRouterProtocol : AnyObject {
 }
 
 
-class AddExpansesRouter: AddExpansesRouterProtocol{
+class AddExpensesRouter: AddExpensesRouterProtocol{
     var router: Router?
 
     init(router: Router) {
@@ -25,10 +25,10 @@ class AddExpansesRouter: AddExpansesRouterProtocol{
 
     
     static func createModule(router: Router) -> UIViewController {
-        let view = AddExpansesViewController()
-        let presenter = AddExpansesPresenter()
-        let router = AddExpansesRouter(router: router)
-//        let interactor = AddExpansesInteractor()
+        let view = AddExpensesViewController()
+        let presenter = AddExpensesPresenter()
+        let router = AddExpensesRouter(router: router)
+//        let interactor = AddExpensesInteractor()
         
         view.presenter = presenter
         presenter.router = router
