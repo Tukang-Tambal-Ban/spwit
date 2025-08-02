@@ -38,6 +38,7 @@ let project = Project(
             ),
             sources: ["spwit/Sources/**"],
             resources: ["spwit/Resources/**"],
+            entitlements: "spwit/Spwit.entitlements",
             // "spwit/Sources/**/*.storyboard", "spwit/Sources/**/*.xib",
             dependencies: [
                 .external(name: "Alamofire")
