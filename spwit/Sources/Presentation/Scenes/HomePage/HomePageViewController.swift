@@ -93,7 +93,9 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
     
     private func setupTapGesture() {
         profileButton.addTarget(self, action: #selector(profileTapped), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
     }
+
     @objc func addTapped() {
         presenter?.didTapAddButton()
     }
