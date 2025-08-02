@@ -26,8 +26,8 @@ class RootViewController: UIViewController, RouterInjectable {
     private func toInitialPage() {
         guard let sceneNavigator = router else { return }
         
-//        let signInViewController = AddExpansesRouter.createModule(router: sceneNavigator)
-        let signInViewController = AddExpansesRouter.createModule(router: sceneNavigator)
+//        let signInViewController = AddExpensesRouter.createModule(router: sceneNavigator)
+        let signInViewController = AddExpensesRouter.createModule(router: sceneNavigator)
         sceneNavigator.setRootViewController(signInViewController)
     }
     
