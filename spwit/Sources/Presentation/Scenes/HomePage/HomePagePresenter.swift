@@ -33,7 +33,14 @@ class HomePagePresenter: HomePagePresenterProtocol {
     }
     
     func didTapAddButton() {
-        router?.navigateToCreateExpenses()
+//        router?.navigateToSheets()
+        if let vc = router?.createNewSheetView() {
+                vc.modalPresentationStyle = .pageSheet
+                if let sheet = vc.sheetPresentationController {
+                    sheet.detents = [.medium()]
+                }
+                (view as? UIViewController)?.present(vc, animated: true)
+            }
     }
     
     func didTapProfileButton() {
