@@ -7,33 +7,20 @@
 
 import UIKit
 
-protocol AddExpensesView: AnyObject {
-    func showError(_ message: String)
-    func showLoading()
-    func hideLoading()
+protocol AddExpensesViewControllerProtocol: AnyObject {
 }
 
-class AddExpensesViewController : UIViewController, AddExpensesViewProtocol {
-    func didNextTapped() {
-        
-    }
+class AddExpensesViewController : UIViewController, AddExpensesViewControllerProtocol {
     
-    func didBackTapped() {
-        
-    }
-    
-    
-    var presenter = AddExpensesPresenter()
-    
+    var presenter: AddExpensesPresenter?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
-        presenter.viewDidLoad()
     }
     
     private func setupUI(){
-        view.backgroundColor = UIColor(hex: "#0F213C")
+        view.backgroundColor = .darkBlue
         
         //        titleExpanse.text = "E.g Taxi"
         //        titleExpanse.textColor = .lightGray
@@ -49,14 +36,14 @@ class AddExpensesViewController : UIViewController, AddExpensesViewProtocol {
         view.addSubview(amountExpanse)
         
 //        Navbar
-        title = "Add  Expenses"
+        title = "Add Expense"
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
         appearance.titleTextAttributes = [
-            .foregroundColor: UIColor(hex: "#0F213C"), // <-- Your title color here!
+            .foregroundColor: UIColor.lightGreen,
             .font: UIFont.boldSystemFont(ofSize: 20) // Optional: change font
         ]
-        navigationController?.navigationBar.tintColor = .systemGreen
+        navigationController?.navigationBar.tintColor = UIColor.lightGreen
         // Apply to the navigation bar
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
@@ -71,7 +58,7 @@ class AddExpensesViewController : UIViewController, AddExpensesViewProtocol {
             )
         
         let infoButton = UIBarButtonItem(
-            title: "next",
+            title: "Next",
             style: .plain,
             target: self,
             action: #selector(nextTapped)
@@ -90,20 +77,16 @@ class AddExpensesViewController : UIViewController, AddExpensesViewProtocol {
             amountExpanse.topAnchor.constraint(equalTo: titleExpanse.bottomAnchor, constant: 20),
             
             
-            
-            
-            
-            
         ]  )
         
     }
     
     @objc func backTapped() {
-        presenter.didBackTapped()
+        presenter?.didBackTapped()
     }
     
     @objc func nextTapped() {
-        presenter.didNextTapped()
+        presenter?.didNextTapped()
     }
 }
 

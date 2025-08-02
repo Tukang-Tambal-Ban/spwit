@@ -8,34 +8,34 @@ import UIKit
 
 class RootViewController: UIViewController, RouterInjectable {
     var router: Router?
-    
+
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+
     init(router: Router? = nil) {
         self.router = router
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         toInitialPage()
     }
-    
+
     private func toInitialPage() {
         guard let sceneNavigator = router else { return }
-        
+
         if SessionManager.shared.isUserLoggedIn(),
-           let user = SessionManager.shared.getSignedInUser() {
-            let homeVC = HomePageRouter.createModule(router: sceneNavigator, for: user)
+            let user = SessionManager.shared.getSignedInUser()
+        {
+            let homeVC = HomeRouter.createModule(router: sceneNavigator, for: user)
             sceneNavigator.setRootViewController(homeVC)
         } else {
             let signInViewController = SignInRouter.createModule(router: sceneNavigator)
             sceneNavigator.setRootViewController(signInViewController)
         }
-        
-    }
-    
-}
 
+    }
+
+}

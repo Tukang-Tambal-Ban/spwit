@@ -7,29 +7,25 @@
 
 import UIKit
 
-protocol AddExpensesViewProtocol : AnyObject {
+protocol AddExpensesPresenterProtocol : AnyObject {
     func didNextTapped()
     func didBackTapped()
     func viewDidLoad()
 }
 
-class AddExpensesPresenter : AddExpensesViewProtocol {
+class AddExpensesPresenter : AddExpensesPresenterProtocol {
     
-    
-    weak var view : AddExpensesViewProtocol?
+    weak var view : AddExpensesViewControllerProtocol?
     var router : AddExpensesRouterProtocol?
     var interactors : AddExpensesInteractorProtocol?
     
     func didBackTapped() {
-        if let vc = view as? UIViewController {
-            router?.navigateBack(from: vc)
-        }
+        router?.navigateBack()
     }
     
     func didNextTapped() {
-        if let vc = view as? UIViewController {
-            router?.navigateNextForm(from: vc)
-        }
+        print("here2")
+        router?.navigateNextForm()
     }
     
     func viewDidLoad() {

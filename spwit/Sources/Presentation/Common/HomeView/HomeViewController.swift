@@ -1,5 +1,5 @@
 //
-//  HomePageViewController.swift
+//  HomeViewController.swift
 //  spwit
 //
 //  Created by Shafa Tiara Tsabita Himawan on 31/07/25.
@@ -7,17 +7,17 @@
 
 import UIKit
 
-protocol HomePageViewProtocol: AnyObject{
+protocol HomeViewProtocol: AnyObject {
     func showWelcomeMessages()
 }
 
-class HomePageViewController: UIViewController, HomePageViewProtocol {
+class HomeViewController: UIViewController, HomeViewProtocol {
     func showWelcomeMessages() {
-//        test
+        //        test
     }
-    
-    var presenter: HomePagePresenterProtocol?
-    
+
+    var presenter: HomePresenterProtocol?
+
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Start Splitting Your Expense"
@@ -36,7 +36,7 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         label.textAlignment = .center
         return label
     }()
-    
+
     private let profileButton: UIButton = {
         let button = UIButton(type: .system)
         let symbolConfig = UIImage.SymbolConfiguration(pointSize: 40, weight: .regular)
@@ -49,7 +49,6 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         button.heightAnchor.constraint(equalToConstant: 50).isActive = true
         return button
     }()
-
 
     private let addButton: UIButton = {
         let button = UIButton(type: .system)
@@ -69,7 +68,7 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         setupLayout()
         setupTapGesture()
     }
-    
+
     private func setupLayout() {
         [titleLabel, subtitleLabel, profileButton, addButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -81,16 +80,18 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
             subtitleLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             subtitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
 
-            profileButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
+            profileButton.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             profileButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
             addButton.widthAnchor.constraint(equalToConstant: 90),
             addButton.heightAnchor.constraint(equalToConstant: 90),
             addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
+            addButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
         ])
     }
-    
+
     private func setupTapGesture() {
         profileButton.addTarget(self, action: #selector(profileTapped), for: .touchUpInside)
         addButton.addTarget(self, action: #selector(addTapped), for: .touchUpInside)
@@ -105,20 +106,20 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
 }
 
 #if DEBUG
-import SwiftUI
+    import SwiftUI
 
-struct HomePageViewPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> HomePageViewController {
-        return HomePageViewController()
+    struct HomeViewPreview: UIViewControllerRepresentable {
+        func makeUIViewController(context: Context) -> HomeViewController {
+            return HomeViewController()
+        }
+        func updateUIViewController(_ uiViewController: HomeViewController, context: Context) {}
     }
-    func updateUIViewController(_ uiViewController: HomePageViewController, context: Context) {}
-}
 
-struct HomePageViewViewController_Preview: PreviewProvider {
-    static var previews: some View {
-        HomePageViewPreview()
-            .edgesIgnoringSafeArea(.all)
-//            .previewDisplayName("UIKit: Sign In Screen")
+    struct HomeViewViewController_Preview: PreviewProvider {
+        static var previews: some View {
+            HomeViewPreview()
+                .edgesIgnoringSafeArea(.all)
+            //            .previewDisplayName("UIKit: Sign In Screen")
+        }
     }
-}
 #endif
