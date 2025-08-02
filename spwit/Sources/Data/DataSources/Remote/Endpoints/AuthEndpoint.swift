@@ -8,9 +8,9 @@ enum AuthEndpoint {
 extension AuthEndpoint: EndPointType {
     var baseURL: String {
         switch APIManager.networkEnvironment {
-        case .dev: return "https://spwit.onrender.com/"
-        case .production: return ""
-        case .stage: return ""
+        case .dev: return "http://localhost:8000/"
+        case .production: return "https://spwit.onrender.com/"
+        case .stage: return "https://spwit.onrender.com/"
         }
     }
     

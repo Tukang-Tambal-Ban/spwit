@@ -7,7 +7,7 @@
 
 
 protocol SignInInteractorProtocol {
-    func signIn(completion: @escaping (Result<SignInEntity, Error>) -> Void)
+    func signIn(payload: SignInRequestEntity, completion: @escaping (Result<SignInEntity, Error>) -> Void)
 }
 
 class SignInInteractor: SignInInteractorProtocol {
@@ -17,14 +17,9 @@ class SignInInteractor: SignInInteractorProtocol {
         self.authUsecase = authUsecase
     }
 
-    func signIn(completion: @escaping (Result<SignInEntity, Error>) -> Void) {
+    func signIn(payload: SignInRequestEntity, completion: @escaping (Result<SignInEntity, Error>) -> Void) {
         Task {
-            let dummyPayload = SignInRequestEntity(
-                identityToken: "dummy_identity_token",
-                appleUserId: "dummy_apple_user_id"
-            )
-
-            let result = try await authUsecase.signIn(payload: dummyPayload)
+            let result = try await authUsecase.signIn(payload: payload)
             completion(result)
         }
     }

@@ -11,9 +11,11 @@ protocol AuthUsecase {
 
 class AuthUsecaseImpl: AuthUsecase {
     private let authRepository: AuthRepository
+    private let persistenceRepo: UserPersistenceRepository
 
-    init(authRepository: AuthRepository) {
+    init(authRepository: AuthRepository, persistanceRepo: UserPersistenceRepository) {
         self.authRepository = authRepository
+        self.persistenceRepo = persistanceRepo
     }
 
     func signIn(payload: SignInRequestEntity) async -> Result<SignInEntity, Error> {
@@ -21,6 +23,7 @@ class AuthUsecaseImpl: AuthUsecase {
             let signInRequest = SignInRequest(from: payload)
             let signInDTO = try await authRepository.signIn(payload: signInRequest)
             let signInEntity = SignInEntity(from: signInDTO)
+            persistenceRepo.saveUser(signInEntity)
             return .success(signInEntity)
         } catch {
             return .failure(error)

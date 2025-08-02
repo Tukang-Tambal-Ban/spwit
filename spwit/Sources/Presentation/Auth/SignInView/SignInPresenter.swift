@@ -7,7 +7,7 @@
 import Foundation
 
 protocol SignInPresenterProtocol: Presentable {
-    func signInTapped()
+    func signIn(with payload: SignInRequestEntity)
     func navigateToHome(signInEntity: SignInEntity)
 }
 
@@ -26,9 +26,9 @@ class SignInPresenter: SignInPresenterProtocol {
         // No-op
     }
 
-    func signInTapped() {
+    func signIn(with payload: SignInRequestEntity) {
         view?.showLoading()
-        interactor.signIn { [weak self] result in
+        interactor.signIn(payload: payload) { [weak self] result in
             DispatchQueue.main.async {
                 self?.view?.hideLoading()
                 switch result {
