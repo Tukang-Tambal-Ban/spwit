@@ -6,11 +6,13 @@
 //
 
 import UIKit
-protocol AddMemberViewProtocol : AnyObject {
+protocol AddPeopleViewProtocol : AnyObject {
     
 }
 
-class AddMemberViewController: UIViewController, AddMemberViewProtocol, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    
+    var presenter: AddPeoplePresenter?
     
     let members : [MemberEntity] = [
         MemberEntity(name:"Muhammad Rifqi"),
@@ -150,6 +152,7 @@ class AddMemberViewController: UIViewController, AddMemberViewProtocol, UICollec
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MemberCell.identifier, for: indexPath) as! MemberCell
+        cell.presenter = presenter
         if collectionView == memberCollectionView {
             cell.configure(with: members[indexPath.item],bgColor: UIColor(hex:"A4F000"))
             return cell
@@ -177,9 +180,50 @@ class AddMemberViewController: UIViewController, AddMemberViewProtocol, UICollec
         setupUIAddMember()
         setupUIAddPeople()
         setupUIAddGroup()
+        setupNavBar()
         
+    }
+    
+    private func setupNavBar() {
         
+//        Navbar
+        title = "Add People or Group"
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithTransparentBackground()
+        appearance.titleTextAttributes = [
+            .foregroundColor: UIColor.lightGreen,
+            .font: UIFont.boldSystemFont(ofSize: 20) // Optional: change font
+        ]
+        navigationController?.navigationBar.tintColor = UIColor.lightGreen
+        // Apply to the navigation bar
+        navigationController?.navigationBar.standardAppearance = appearance
+        navigationController?.navigationBar.scrollEdgeAppearance = appearance
+        navigationController?.navigationBar.compactAppearance = appearance
+     
         
+        let leftBarButtonItem = UIBarButtonItem(
+                image: UIImage(systemName: "chevron.left"), // or use .title: "Back"
+                style: .plain,
+                target: self,
+                action: #selector(backTapped)
+            )
+        
+        let infoButton = UIBarButtonItem(
+            title: "Next",
+            style: .plain,
+            target: self,
+            action: #selector(nextTapped)
+        )
+        navigationItem.leftBarButtonItem = leftBarButtonItem
+        navigationItem.rightBarButtonItem = infoButton
+    }
+    
+    @objc func backTapped() {
+        presenter?.didBackTapped()
+    }
+    
+    @objc func nextTapped() {
+        presenter?.didNextTapped()
     }
     
     private func setupUIAddGroup() {
@@ -228,7 +272,7 @@ class AddMemberViewController: UIViewController, AddMemberViewProtocol, UICollec
         view.addSubview(memberCollectionView)
         
         NSLayoutConstraint.activate([
-            sectionLabelMember.topAnchor.constraint(equalTo: view.topAnchor, constant: 80),
+            sectionLabelMember.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             sectionLabelMember.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             sectionLabelMember.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             
@@ -253,7 +297,7 @@ struct AddMemberViewController_Preview: UIViewControllerRepresentable {
             MemberEntity(name:"Muhammad Rifqi"),
             
         ]
-        return AddMemberViewController()
+        return AddPeopleViewController()
     }
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 }

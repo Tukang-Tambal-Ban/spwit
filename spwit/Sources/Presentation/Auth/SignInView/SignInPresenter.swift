@@ -16,7 +16,9 @@ class SignInPresenter: SignInPresenterProtocol {
     private let interactor: SignInInteractorProtocol
     private let router: SignInRouterProtocol
 
-    init(view: SignInViewProtocol, interactor: SignInInteractorProtocol, router: SignInRouterProtocol) {
+    init(
+        view: SignInViewProtocol, interactor: SignInInteractorProtocol, router: SignInRouterProtocol
+    ) {
         self.view = view
         self.interactor = interactor
         self.router = router
@@ -40,8 +42,8 @@ class SignInPresenter: SignInPresenterProtocol {
             }
         }
     }
-    
+
     func navigateToHome(signInEntity: SignInEntity) {
-        router.navigateToHomePage(signInEntity)
+        router.navigateToHomeView(signInEntity)
     }
 }

@@ -8,7 +8,7 @@
 import UIKit
 
 protocol SignInRouterProtocol {
-    func navigateToHomePage(_ signIn: SignInEntity)
+    func navigateToHomeView(_ signIn: SignInEntity)
 }
 
 class SignInRouter: SignInRouterProtocol, RouterInjectable {
@@ -26,13 +26,12 @@ class SignInRouter: SignInRouterProtocol, RouterInjectable {
         view.presenter = presenter
         return view
     }
-    
-    
-    func navigateToHomePage(_ signIn: SignInEntity) {
+
+    func navigateToHomeView(_ signIn: SignInEntity) {
         guard let sceneNavigator = router else { return }
-        
+
         // Create Scene B View Controller
-        let HomePageViewController = HomePageRouter.createModule(router: sceneNavigator, for: signIn)
-        sceneNavigator.setRootViewController(HomePageViewController)
+        let HomeViewController = HomeRouter.createModule(router: sceneNavigator, for: signIn)
+        sceneNavigator.setRootViewController(HomeViewController)
     }
 }

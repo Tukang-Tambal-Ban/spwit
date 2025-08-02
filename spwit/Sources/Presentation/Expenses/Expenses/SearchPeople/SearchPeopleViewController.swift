@@ -9,6 +9,8 @@ struct GroupSection {
 
 class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
+    var presenter: SearchPeoplePresenter?
+    
     var sections: [GroupSection] = [
         GroupSection(
             title: "People on Spwiwit",

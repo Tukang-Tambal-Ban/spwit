@@ -10,6 +10,7 @@ import UIKit
 
 class MemberCell: UICollectionViewCell {
     static let identifier = "MemberCell"
+    var presenter: AddPeoplePresenter?
     
     let initialsView = InitialsCircleView(initials: "AB", diameter: 48, bgColor: UIColor(hex:"A4F000"))
     let nameLabel = UILabel()
@@ -20,6 +21,12 @@ class MemberCell: UICollectionViewCell {
         initialsView.backgroundColor = bgColor
         nameLabel.text = ""
         onlineDot.isHidden = true
+        initialsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(searchPeople)))
+    }
+    
+    @objc func searchPeople() {
+        print("fhjfhekw")
+        presenter?.navigateSearch()
     }
     
     func configure(with member: MemberEntity, bgColor : UIColor? = nil, showOnlineDot : Bool = false) {
