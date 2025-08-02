@@ -55,9 +55,6 @@ class MemberCell: UICollectionViewCell {
         contentView.addSubview(onlineDot)
         
         NSLayoutConstraint.activate([
-            
-            
-            
             initialsView.topAnchor.constraint(equalTo: contentView.topAnchor),
             initialsView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             initialsView.widthAnchor.constraint(equalToConstant: 48),
