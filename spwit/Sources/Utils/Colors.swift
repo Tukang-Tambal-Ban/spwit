@@ -28,10 +28,10 @@ extension UIColor {
         return UIColor(named: "plus") ?? .plus
     }
     static var transparantGrey: UIColor {
-        return UIColor(hex: "1F2E46")
+        return UIColor(named: "transparantGrey") ?? .transparantGrey
     }
 
     static var textGrey: UIColor {
-        return UIColor(hex: "999999")
+        return UIColor(named: "textGrey") ?? .textGrey
     }
 }
