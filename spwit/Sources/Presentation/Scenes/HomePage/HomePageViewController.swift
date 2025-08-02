@@ -36,50 +36,32 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         label.textAlignment = .center
         return label
     }()
-//    private let profileButton: UILabel = {
-//        let label = UILabel()
-//        let symbol = UIImage.SymbolConfiguration(pointSize: 13, weight: .regular)
-//        if let image = UIImage(systemName: "person.fill", withConfiguration: symbol){
-//            let attachment = NSTextAttachment()
-//            attachment.image = image
-//            attachment.bounds = CGRect(x: 0, y: -2, width: 13, height: 13)
-//            let attributedString = NSMutableAttributedString(attachment: attachment)
-//            label.attributedText = attributedString
-//        } else {
-//            label.text = ""
-//        }
-//        label.textColor = UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
-//        label.frame = CGRect(x: 0, y: 0, width: 43, height: 35)
-//        label.font = UIFont(name: "SFPro-Regular", size: 36)
-//        label.textAlignment = .center
-//        return label
-//    }()
-    private let profileButton: UIImageView = {
-        let imageView = UIImageView()
-        
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 30, weight: .regular)
-        if let image = UIImage(systemName: "person.circle.fill", withConfiguration: symbolConfig) {
-            imageView.image = image.withRenderingMode(.alwaysTemplate)
-            imageView.tintColor = UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
-        }
-
-        imageView.contentMode = .scaleAspectFit
-        imageView.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
-        return imageView
+    
+    private let profileButton: UIButton = {
+        let button = UIButton(type: .system)
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 40, weight: .regular)
+        let image = UIImage(systemName: "person.circle.fill", withConfiguration: symbolConfig)
+        button.setImage(image, for: .normal)
+        button.tintColor = UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        return button
     }()
-    private let addButton: UIImageView = {
-        let imageView = UIImageView()
-        
-        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 84, weight: .regular)
-        if let image = UIImage(systemName: "plus.circle.fill", withConfiguration: symbolConfig) {
-            imageView.image = image.withRenderingMode(.alwaysTemplate)
-            imageView.tintColor = UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
-        }
 
-        imageView.contentMode = .scaleAspectFit
-        imageView.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
-        return imageView
+
+    private let addButton: UIButton = {
+        let button = UIButton(type: .system)
+        let config = UIImage.SymbolConfiguration(pointSize: 90, weight: .regular)
+        let image = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
+        button.setImage(image, for: .normal)
+        button.tintColor = UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
+        button.imageView?.contentMode = .scaleAspectFit
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(red: 0.059, green: 0.129, blue: 0.235, alpha: 1)
@@ -87,6 +69,7 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         setupLayout()
         setupTapGesture()
     }
+    
     private func setupLayout() {
         [titleLabel, subtitleLabel, profileButton, addButton].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -101,20 +84,15 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
             profileButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 8),
             profileButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            addButton.widthAnchor.constraint(equalToConstant: 84),
-            addButton.heightAnchor.constraint(equalToConstant: 73),
+            addButton.widthAnchor.constraint(equalToConstant: 90),
+            addButton.heightAnchor.constraint(equalToConstant: 90),
             addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -40)
+            addButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10)
         ])
     }
+    
     private func setupTapGesture() {
-        let tapPlus = UITapGestureRecognizer(target: self, action: #selector(addTapped))
-        addButton.isUserInteractionEnabled = true
-        addButton.addGestureRecognizer(tapPlus)
-        
-        let tapProfile = UITapGestureRecognizer(target: self, action: #selector(profileTapped))
-        profileButton.isUserInteractionEnabled = true
-        profileButton.addGestureRecognizer(tapProfile)
+        profileButton.addTarget(self, action: #selector(profileTapped), for: .touchUpInside)
     }
     @objc func addTapped() {
         presenter?.didTapAddButton()
@@ -123,7 +101,6 @@ class HomePageViewController: UIViewController, HomePageViewProtocol {
         presenter?.didTapProfileButton()
     }
 }
-
 
 #if DEBUG
 import SwiftUI
@@ -139,30 +116,7 @@ struct HomePageViewViewController_Preview: PreviewProvider {
     static var previews: some View {
         HomePageViewPreview()
             .edgesIgnoringSafeArea(.all)
-            .previewDisplayName("UIKit: Sign In Screen")
+//            .previewDisplayName("UIKit: Sign In Screen")
     }
 }
 #endif
-
-//
-//#if DEBUG
-//import SwiftUI
-//
-//struct HomePageViewControllerPreview: UIViewControllerRepresentable {
-//    func makeUIViewController(context: Context) -> HomePageViewController {
-//        let vc = HomePageViewController()
-//        // Optionally, inject a mock presenter if needed for testing
-//        return vc
-//    }
-//    func updateUIViewController(_ uiViewController: HomePageViewController, context: Context) {}
-//}
-//
-//struct HomePageViewController_Previews: PreviewProvider {
-//    static var previews: some View {
-//        HomePageViewControllerPreview()
-//            .edgesIgnoringSafeArea(.all)
-//            .previewDisplayName("UIKit: Home Page")
-//    }
-//}
-//#endif
-//

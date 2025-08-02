@@ -7,8 +7,9 @@
 import UIKit
 
 protocol HomePageRouterProtocol: AnyObject {
-    func navigateToCreateExpenses()
+    func navigateToSheets()
     func navigateToProfile()
+    func createNewSheetView() -> UIViewController
 }
 
 class HomePageRouter: HomePageRouterProtocol, RouterInjectable {
@@ -20,27 +21,47 @@ class HomePageRouter: HomePageRouterProtocol, RouterInjectable {
         self.viewController = viewController
     }
     
-    static func createModule(router: Router, for signIn : SignInEntity) -> UIViewController {
-        let view = HomePageViewController()
-        let interactor = HomePageInteractor()
-        let router = HomePageRouter(router: router, viewController: view)
-        let presenter = HomePagePresenter(
-            view: view,
-            interactor: interactor,
-            router: router
-        )
-        
-        view.presenter = presenter
-        
-        return view
-    }
-    func navigateToCreateExpenses() {
-//        test
+    func navigateToSheets() {
+        let sheetVC = createNewSheetView()
+        sheetVC.modalPresentationStyle = .pageSheet
+        viewController?.present(sheetVC, animated: true)
     }
     
     func navigateToProfile() {
-//        test
+        print("Nav to profile")
     }
     
+    func createNewSheetView() -> UIViewController {
+        return SheetsRouter.assembleModule()
+    }
     
+    static func createModule(router: Router, for signIn : SignInEntity) -> UIViewController {
+        let view = HomePageViewController()
+        let interactor = HomePageInteractor()
+        let pageRouter = HomePageRouter(router: router, viewController: view)
+        let presenter = HomePagePresenter(
+                view: view,
+                interactor: interactor,
+                router: pageRouter
+            )
+        view.presenter = presenter
+        return view
+    }
+        
+//        func assembleModule() -> UIViewController {
+//            let view = HomePageViewController()
+//            let interactor = HomePageInteractor()
+//            let router = HomePageRouter(router: router, viewController: view)
+//            let presenter = HomePagePresenter(
+//                view: view,
+//                interactor: interactor,
+//                router: router
+//            )
+//            
+//            view.presenter = presenter
+//            
+//            return view
+//        }
+        
+        
 }
