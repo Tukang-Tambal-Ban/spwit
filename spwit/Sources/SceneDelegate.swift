@@ -40,7 +40,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Set the root view controller of the navigation controller
         navigationController.viewControllers = [rootViewController]
-        
+//        let nav = UINavigationController(rootViewController: AddMemberViewController())
         // Set the navigation controller as the window's root view controller
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()

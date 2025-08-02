@@ -125,6 +125,9 @@ struct AddExpansesViewController_Previews: PreviewProvider {
         AddExpansesPreview()
             .edgesIgnoringSafeArea(.all)
             .previewDisplayName("UIKit: Sign In Screen")
+            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle(Text("Add Expanses"))
+            
     }
 }
 #endif
