@@ -16,6 +16,7 @@ protocol SignInViewProtocol: AnyObject {
 }
 class SignInViewController: UIViewController, SignInViewProtocol {
     var presenter: SignInPresenterProtocol?
+    private var appleSignInService: AppleSignInService?
 
     private let signInButton = UIButton(type: .system)
     private let activityIndicator = UIActivityIndicatorView()
@@ -90,7 +91,8 @@ class SignInViewController: UIViewController, SignInViewProtocol {
     }
 
     @objc private func signInTapped() {
-        presenter?.signInTapped()
+        appleSignInService = AppleSignInService(delegate: self, presentationAnchor: view.window)
+          appleSignInService?.startSignInWithAppleFlow()
     }
 
     func showResult(from entity: SignInEntity) {
@@ -98,7 +100,7 @@ class SignInViewController: UIViewController, SignInViewProtocol {
     }
 
     func showError(_ error: Error) {
-        resultLabel.text = "❌ Error: \(error.localizedDescription)"
+        print("error: \(error)")
     }
 
     func showLoading() {
@@ -126,6 +128,16 @@ class SignInViewController: UIViewController, SignInViewProtocol {
         signInButton.isEnabled = true
     }
     
+}
+
+extension SignInViewController: AppleSignInServiceDelegate {
+    func didReceiveAppleSignIn(success: SignInRequestEntity) {
+        presenter?.signIn(with: success)
+    }
+
+    func didFailAppleSignIn(error: Error) {
+        showError(error)
+    }
 }
 
 

@@ -10,7 +10,7 @@ import Foundation
 
 class APIManager {
     static let shared = APIManager()
-    static let networkEnvironment: NetworkEnvironment = .dev
+    static let networkEnvironment: NetworkEnvironment = .stage
 
     private init() {}
 
@@ -29,9 +29,6 @@ class APIManager {
         )
         .validate()
         .responseDecodable(of: T.self) { response in
-            print("➡️ Request: \(String(describing: response.request))")
-            print("⬅️ Response: \(String(describing: response.data).flatMap { _ in String(data: response.data ?? Data(), encoding: .utf8) })")
-
             switch response.result {
             case .success(let decodedData):
                 completion(.success(decodedData))
