@@ -1,30 +1,51 @@
 //
-//  CreateGroupRouterProtocol.swift
-//  spwit
+//  CreateGroupRouter.swift
+//  Spwit
 //
-//  Created by Adithya Firmansyah Putra on 01/08/25.
+//  Created by Shafa Tiara Tsabita Himawan on 02/08/25.
 //
 
 import UIKit
 
-protocol CreateGroupRouterProtocol {
+protocol CreateGroupRouterProtocol: AnyObject {
+    func navigateToAddPeople()
+    func navigateToGroupDetail()
+    func back()
+    func dismiss()
 
 }
 
-class CreateGroupRouter: CreateGroupRouterProtocol, RouterInjectable {
-    var router: Router?
-
-    init(router: Router) {
-        self.router = router
-    }
-
-    static func createModule(router: Router) -> UIViewController {
+class CreateGroupRouter: CreateGroupRouterProtocol {
+//    var router: Router?
+    private weak var viewController: UIViewController?
+    
+    static func createModule() -> UIViewController{
         let view = CreateGroupViewController()
-        let interactor = CreateGroupInteractor(groupUsecase: DIContainer.shared.groupUsecase)
-        let router = CreateGroupRouter(router: router)
-        let presenter = CreateGroupPresenter(view: view, interactor: interactor, router: router)
+        let presenter = CreateGroupPresenter()
+        let router = CreateGroupRouter()
+        let interactor = CreateGroupInteractor()
+        
         view.presenter = presenter
+        presenter.view = view
+        presenter.router = router
+        presenter.interactor = interactor
+        router.viewController = view
+        
         return view
     }
-
+    
+    func navigateToAddPeople() {
+//        this is code to nav add people
+        print("Nav to add people")
+    }
+    
+    func navigateToGroupDetail() {
+//        this is code to group detail
+    }
+    func back() {
+//        to back
+    }
+    func dismiss() {
+        viewController?.dismiss(animated: true)
+    }
 }

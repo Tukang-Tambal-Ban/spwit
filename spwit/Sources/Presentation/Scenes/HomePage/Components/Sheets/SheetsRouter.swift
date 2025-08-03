@@ -34,7 +34,10 @@ class SheetsRouter: SheetsRouterProtocol {
     }
     
     func navigateToCreateGroup() {
-//        create
+        let vc = CreateGroupRouter.createModule()
+        let navController = UINavigationController(rootViewController: vc)
+        navController.modalPresentationStyle = .fullScreen
+        viewController?.present(navController, animated: true)
     }
     
     func navigateToCreateExpenses() {
@@ -42,8 +45,7 @@ class SheetsRouter: SheetsRouterProtocol {
     }
     
     func navigateToTakePict() {
-        let vc = CreateGroupRouter.createModule()
-        viewController?.navigationController?.pushViewController(vc, animated: true)
+        
     }
     
     
