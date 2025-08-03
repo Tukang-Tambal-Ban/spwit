@@ -256,7 +256,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
             
             nearbyLabel.leadingAnchor.constraint(equalTo: sectionLabelPeople.trailingAnchor, constant: 6),
             nearbyLabel.centerYAnchor.constraint(equalTo: sectionLabelPeople.centerYAnchor),
-            nearbyLabel.heightAnchor.constraint(equalToConstant: 30), // Was 80
+            nearbyLabel.heightAnchor.constraint(equalToConstant: 30),
             nearbyLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 50),
             
             peoplesCollectionView.topAnchor.constraint(equalTo: sectionLabelPeople.bottomAnchor, constant: 16),
