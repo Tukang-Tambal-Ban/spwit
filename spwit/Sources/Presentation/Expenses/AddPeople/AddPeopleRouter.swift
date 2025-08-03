@@ -43,7 +43,6 @@ class AddPeopleRouter: AddPeopleRouterProtocol{
     
     
     func navigateSearch() {
-        print("hereeere")
         guard let sceneNavigator = router else { return }
 
         let searchPeopleViewController = SearchPeopleRouter.createModule(router: sceneNavigator)

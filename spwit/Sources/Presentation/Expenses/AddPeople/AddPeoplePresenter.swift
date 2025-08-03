@@ -29,7 +29,6 @@ class AddPeoplePresenter : AddPeoplePresenterProtocol {
     }
     
     func navigateSearch() {
-        print("hererererer")
         router?.navigateSearch()
     }
     
