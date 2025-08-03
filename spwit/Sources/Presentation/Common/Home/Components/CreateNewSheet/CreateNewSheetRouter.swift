@@ -40,7 +40,12 @@ class CreateNewSheetRouter: CreateNewSheetRouterProtocol {
     }
 
     func navigateToCreateGroup() {
-        //        create
+        dismiss()
+        
+        guard let sceneNavigator = router else { return }
+
+        let createGroupViewController = CreateGroupRouter.createModule(router: sceneNavigator)
+        sceneNavigator.push(createGroupViewController)
     }
 
     func navigateToCreateExpenses() {

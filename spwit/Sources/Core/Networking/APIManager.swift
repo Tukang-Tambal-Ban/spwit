@@ -8,9 +8,11 @@
 import Alamofire
 import Foundation
 
+struct EmptyParams: Codable {}
+
 class APIManager {
     static let shared = APIManager()
-    static let networkEnvironment: NetworkEnvironment = .stage
+    static let networkEnvironment: NetworkEnvironment = .dev
 
     private init() {}
 
@@ -20,6 +22,14 @@ class APIManager {
         params: Parameters? = nil,
         completion: @escaping (Result<T, Error>) -> Void
     ) {
+        print("Headers")
+        print(type.headers)
+        print("URL")
+        print(type.url)
+        print("HTTP Method")
+        print(type.httpMethod)
+        print("Params")
+        print(params)
         AF.request(
             type.url,
             method: type.httpMethod,
