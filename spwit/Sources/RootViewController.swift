@@ -25,6 +25,7 @@ class RootViewController: UIViewController, RouterInjectable {
 
     private func toInitialPage() {
         guard let sceneNavigator = router else { return }
+<<<<<<< HEAD
 
         if SessionManager.shared.isUserLoggedIn(),
             let user = SessionManager.shared.getSignedInUser()
@@ -35,6 +36,21 @@ class RootViewController: UIViewController, RouterInjectable {
             let signInViewController = SignInRouter.createModule(router: sceneNavigator)
             sceneNavigator.setRootViewController(signInViewController)
         }
+=======
+        let homeVC = HomePageRouter.createModule(router: sceneNavigator )
+        sceneNavigator.setRootViewController(homeVC)
+//        if SessionManager.shared.isUserLoggedIn(),
+//           let user = SessionManager.shared.getSignedInUser() {
+//            let homeVC = HomePageRouter.createModule(router: sceneNavigator, for: user)
+//            sceneNavigator.setRootViewController(homeVC)
+//        } else {
+//            let signInViewController = SignInRouter.createModule(router: sceneNavigator)
+//            sceneNavigator.setRootViewController(signInViewController)
+//        }
+    }
+    
+}
+>>>>>>> e654a5c (refactor: memperbaiki UI dan logic dari add people nearby in create group)
 
     }
 
