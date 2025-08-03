@@ -24,7 +24,6 @@ class AddExpensesPresenter : AddExpensesPresenterProtocol {
     }
     
     func didNextTapped() {
-        print("here2")
         router?.navigateNextForm()
     }
     

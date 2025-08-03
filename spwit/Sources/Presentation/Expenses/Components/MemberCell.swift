@@ -25,7 +25,6 @@ class MemberCell: UICollectionViewCell {
     }
     
     @objc func searchPeople() {
-        print("fhjfhekw")
         presenter?.navigateSearch()
     }
     
