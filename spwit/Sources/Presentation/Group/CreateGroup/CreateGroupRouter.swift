@@ -16,13 +16,18 @@ protocol CreateGroupRouterProtocol: AnyObject {
 }
 
 class CreateGroupRouter: CreateGroupRouterProtocol {
-//    var router: Router?
+    var router: Router?
+
+    init(router: Router) {
+        self.router = router
+    }
+
     private weak var viewController: UIViewController?
     
-    static func createModule() -> UIViewController{
+    static func createModule(router: Router) -> UIViewController{
         let view = CreateGroupViewController()
         let presenter = CreateGroupPresenter()
-        let router = CreateGroupRouter()
+        let router = CreateGroupRouter(router: router)
         let interactor = CreateGroupInteractor()
         
         view.presenter = presenter
