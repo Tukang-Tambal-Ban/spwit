@@ -32,7 +32,6 @@ class SignInRouter: SignInRouterProtocol, RouterInjectable {
 
         // Create Scene B View Controller
         let HomeViewController = HomeRouter.createModule(router: sceneNavigator, for: signIn)
-        let HomePageViewController = HomePageRouter.createModule(router: sceneNavigator)
-        sceneNavigator.setRootViewController(HomePageViewController)
+        sceneNavigator.setRootViewController(HomeViewController)
     }
 }
