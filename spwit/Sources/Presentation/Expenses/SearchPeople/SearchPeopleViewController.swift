@@ -24,12 +24,7 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
             isExpanded: false,
             selectedIndices: []
         ),
-//        GroupSection(
-//            title: "Group List New",
-//            items: ["Group New 1", "Group New 2", "Group New 3"],
-//            isExpanded: false,
-//            selectedIndices: []
-//        )
+
     ]
     
     let tableView = UITableView()
@@ -139,7 +134,7 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
             diameter: 44,
             bgColor: initialsBgColor,
             textColor: initialsTextColor,
-            font: .systemFont(ofSize:18)
+            font: .preferredFont(forTextStyle: .body)
         )
         initialCircle.translatesAutoresizingMaskIntoConstraints = false
         cell.contentView.addSubview(initialCircle)

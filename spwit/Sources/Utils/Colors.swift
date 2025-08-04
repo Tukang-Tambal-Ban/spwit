@@ -43,6 +43,10 @@ extension UIColor {
     static var lightGreen: UIColor {
         return UIColor(named: "lightGreen") ?? UIColor(red: 0.643, green: 0.941, blue: 0, alpha: 1)
     }
+    
+    static var lightBlue: UIColor {
+        return UIColor(named: "lightBlue") ?? .lightBlue
+    }
 
     static var grey: UIColor {
         return UIColor(named: "grey") ?? UIColor(white: 0.6, alpha: 1)
@@ -62,5 +66,13 @@ extension UIColor {
 
     static var textGrey: UIColor {
         return UIColor(named: "textGrey") ?? UIColor(white: 0.8, alpha: 1)
+    }
+    
+    static var gradiantBlue: UIColor {
+        return UIColor(named: "GradiantBlue") ?? .gradiantBlue
+    }
+    
+    static var gradiantGreen: UIColor {
+        return UIColor(named: "GradiantGreen") ?? .gradiantBlue
     }
 }
