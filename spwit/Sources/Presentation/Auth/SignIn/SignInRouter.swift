@@ -31,13 +31,8 @@ class SignInRouter: SignInRouterProtocol, RouterInjectable {
         guard let sceneNavigator = router else { return }
 
         // Create Scene B View Controller
-<<<<<<< HEAD:spwit/Sources/Presentation/Auth/SignIn/SignInRouter.swift
         let HomeViewController = HomeRouter.createModule(router: sceneNavigator, for: signIn)
-        sceneNavigator.setRootViewController(HomeViewController)
-=======
-//        let HomePageViewController = HomePageRouter.createModule(router: sceneNavigator, for: signIn)
         let HomePageViewController = HomePageRouter.createModule(router: sceneNavigator)
         sceneNavigator.setRootViewController(HomePageViewController)
->>>>>>> e654a5c (refactor: memperbaiki UI dan logic dari add people nearby in create group):spwit/Sources/Presentation/Auth/SignInView/SignInRouter.swift
     }
 }

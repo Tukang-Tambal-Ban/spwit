@@ -10,6 +10,7 @@ import UIKit
 protocol SearchPeopleRouterProtocol : AnyObject {
     func navigateBack()
     func navigateNextForm()
+    func navigateToAddPeople()
 }
 
 
@@ -37,6 +38,10 @@ class SearchPeopleRouter: SearchPeopleRouterProtocol{
     }
     
     func navigateBack() {
+        router?.pop()
+    }
+    
+    func navigateToAddPeople() {
         router?.pop()
     }
 

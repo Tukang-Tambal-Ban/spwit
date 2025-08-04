@@ -57,7 +57,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     private let sectionLabelMember: UILabel = {
         let label = UILabel()
         label.text = "Add Member"
-        label.textColor = UIColor(hex:"A4F000")
+        label.textColor = UIColor.lightGreen
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -67,7 +67,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     private let sectionLabelPeople: UILabel = {
         let label = UILabel()
         label.text = "Add People"
-        label.textColor = UIColor(hex:"A4F000")
+        label.textColor = UIColor.lightGreen
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -76,7 +76,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     private let sectionLabelGroup: UILabel = {
         let label = UILabel()
         label.text = "Group"
-        label.textColor = UIColor(hex:"A4F000")
+        label.textColor = UIColor.lightGreen
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -154,20 +154,20 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MemberCell.identifier, for: indexPath) as! MemberCell
         cell.presenter = presenter
         if collectionView == memberCollectionView {
-            cell.configure(with: members[indexPath.item],bgColor: UIColor(hex:"A4F000"))
+            cell.configure(with: members[indexPath.item],bgColor: UIColor.lightGreen)
             return cell
         } else if collectionView == peoplesCollectionView {
             switch cellItems[indexPath.item]{
             case .addButton:
-                cell.configureAsAddButton(bgColor: UIColor(hex: "A4F000"))
+                cell.configureAsAddButton(bgColor: UIColor.lightGreen)
             case .member(let peoples):
-                cell.configure(with: peoples,bgColor: UIColor(hex:"999999"),showOnlineDot: true)
+                cell.configure(with: peoples,bgColor: UIColor.grey,showOnlineDot: true)
             }
             
             return cell
             
         } else if collectionView == groupCollectionView {
-            cell.configure(with: groups[indexPath.item],bgColor: UIColor(hex:"999999"))
+            cell.configure(with: groups[indexPath.item],bgColor: UIColor.grey)
             return cell
         }
         
@@ -176,7 +176,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     
     
     override func viewDidLoad() {
-        view.backgroundColor = UIColor(hex: "#0F213C")
+        view.backgroundColor = UIColor.darkBlue
         setupUIAddMember()
         setupUIAddPeople()
         setupUIAddGroup()
@@ -186,37 +186,45 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     }
     
     private func setupNavBar() {
-        
-//        Navbar
+        // Navbar
         title = "Add People or Group"
+        
+        // Configure navigation bar appearance
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.darkBlue // Match view background
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.lightGreen,
-            .font: UIFont.boldSystemFont(ofSize: 20) // Optional: change font
+            .font: UIFont.boldSystemFont(ofSize: 20)
         ]
+        
+        // Apply appearance to all navigation bar states
         navigationController?.navigationBar.tintColor = UIColor.lightGreen
-        // Apply to the navigation bar
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
-     
         
+        // Ensure navigation bar is visible
+        navigationController?.setNavigationBarHidden(false, animated: false)
+        
+        // Back button
         let leftBarButtonItem = UIBarButtonItem(
-                image: UIImage(systemName: "chevron.left"), // or use .title: "Back"
-                style: .plain,
-                target: self,
-                action: #selector(backTapped)
-            )
+            image: UIImage(systemName: "chevron.left"),
+            style: .plain,
+            target: self,
+            action: #selector(backTapped)
+        )
         
-        let infoButton = UIBarButtonItem(
+        // Next/Add button
+        let rightBarButtonItem = UIBarButtonItem(
             title: "Next",
             style: .plain,
             target: self,
             action: #selector(nextTapped)
         )
+        
         navigationItem.leftBarButtonItem = leftBarButtonItem
-        navigationItem.rightBarButtonItem = infoButton
+        navigationItem.rightBarButtonItem = rightBarButtonItem
     }
     
     @objc func backTapped() {
@@ -274,6 +282,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
         view.addSubview(memberCollectionView)
         
         NSLayoutConstraint.activate([
+            // Use safeAreaLayoutGuide to account for navigation bar
             sectionLabelMember.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
             sectionLabelMember.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             sectionLabelMember.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
