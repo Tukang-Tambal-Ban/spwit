@@ -1,0 +1,11 @@
+extension UIView {
+    func applyGradient(colors: [UIColor], start: CGPoint = .zero, end: CGPoint = CGPoint(x: 1, y: 1)) {
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.colors = colors.map { $0.cgColor }
+        gradientLayer.startPoint = start
+        gradientLayer.endPoint = end
+        gradientLayer.frame = bounds
+        gradientLayer.cornerRadius = layer.cornerRadius
+        layer.insertSublayer(gradientLayer, at: 0)
+    }
+}
