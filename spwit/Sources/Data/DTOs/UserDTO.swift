@@ -16,15 +16,24 @@
 
 import Foundation
 
-struct SuggestedUsersResponse: Codable {
-    let suggestedUsers: [SuggestedUser]
+struct SearchUserRequest: Encodable {
+    let username: String
+}
 
+struct UserResponse: Codable {
+    let id: String
+    let name: String
+    let username: String
+    let email: String?
+    let appleId: String?
+    let createdAt: String
+    
     enum CodingKeys: String, CodingKey {
-        case suggestedUsers = "suggested_users"
-    }
-
-    struct SuggestedUser: Codable {
-        let id: String
-        let name: String
+        case id
+        case name
+        case username
+        case email
+        case appleId = "apple_id"
+        case createdAt = "created_at"
     }
 }

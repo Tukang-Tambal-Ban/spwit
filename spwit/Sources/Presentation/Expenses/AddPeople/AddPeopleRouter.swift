@@ -32,9 +32,11 @@ class AddPeopleRouter: AddPeopleRouterProtocol{
         return view
     }
     
-    
     func navigateNextForm() {
-        
+        guard let sceneNavigator = router else { return }
+
+        let assignExpenseRouter = AssignExpenseRouter.createModule(router: sceneNavigator)
+        sceneNavigator.push(assignExpenseRouter)
     }
     
     func navigateBack() {
@@ -45,7 +47,7 @@ class AddPeopleRouter: AddPeopleRouterProtocol{
     func navigateSearch() {
         guard let sceneNavigator = router else { return }
 
-        let searchPeopleViewController = SearchPeopleRouter.createModule(router: sceneNavigator)
+        let searchPeopleViewController = SearchPeopleRouter.createModule(router: sceneNavigator, preselectedUsers: [], onUsersSelected: { user in print("Selected: \(user.count)")})
         sceneNavigator.push(searchPeopleViewController)
     }
     

@@ -8,18 +8,14 @@
 // FOR DUMMY ONLY
 import UIKit
 
-struct GroupCardViewModel {
-    let groupName: String
-    let memberCount: Int
-    let statusText: String?
-    let statusAmount: String?
-    let statusType: StatusType   
-    
-    enum StatusType {
-        case settled
-        case lent
-        case owe
-        case none
-    }
+enum GroupCardStatus {
+    case settled, lent, owe, none
 }
 
+struct GroupCardModel {
+    let groupName: String
+    let memberCount: Int
+    let statusText: String
+    let statusAmount: String?
+    let statusType: GroupCardStatus
+}

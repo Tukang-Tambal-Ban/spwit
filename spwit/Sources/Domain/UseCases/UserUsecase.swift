@@ -16,7 +16,8 @@
 import Foundation
 
 protocol UserUsecase {
-    func getSuggestedUsers() async -> Result<[SuggestedUserEntity], Error>
+    func getSuggestedUsers() async -> Result<[User], Error>
+    func getUsers(username: String) async -> Result<[User], Error>
 }
 
 class UserUsecaseImpl: UserUsecase {
@@ -26,9 +27,18 @@ class UserUsecaseImpl: UserUsecase {
         self.repository = repository
     }
 
-    func getSuggestedUsers() async -> Result<[SuggestedUserEntity], Error> {
+    func getSuggestedUsers() async -> Result<[User], Error> {
         do {
             let users = try await repository.getSuggestedUsers()
+            return .success(users)
+        } catch {
+            return .failure(error)
+        }
+    }
+    
+    func getUsers(username: String) async -> Result<[User], Error> {
+        do {
+            let users = try await repository.getUsers(username: username)
             return .success(users)
         } catch {
             return .failure(error)

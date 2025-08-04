@@ -6,23 +6,21 @@
 //
 
 import UIKit
-protocol CreateGroupProtocol: AnyObject {
-    func updateInitialsCircle(with initials: String)
-    func reloadMembers(with members: [String])
-    func renderNearbyAvatars(_ users: [String])
-}
 
-class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterInjectable {
-    
+class CreateGroupViewController: UIViewController, CreateGroupProtocol,
+    RouterInjectable
+{
+
     var router: Router?
     var presenter: CreateGroupPresenterProtocol?
-    
-    private func updateDoneButtonState(members: [String]) {
-        let moreThanYou = members.filter { $0.lowercased() != "you" }.count > 0
+
+    private func updateDoneButtonState(members: [User]) {
+        let moreThanYou =
+            members.filter { $0.name.lowercased() != "you" }.count > 0
         doneButton.isEnabled = moreThanYou
         doneButton.backgroundColor = moreThanYou ? .lightGreen : .grey
     }
-    
+
     private let initialCircle: UILabel = {
         let label = UILabel()
         label.textAlignment = .center
@@ -32,7 +30,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         label.clipsToBounds = true
         return label
     }()
-    
+
     private let groupNameLabel: UILabel = {
         let label = UILabel()
         label.text = "Your group name"
@@ -40,7 +38,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         label.textAlignment = .left
         return label
     }()
-    
+
     private let nearbyLabel: UILabel = {
         let label = UILabel()
         label.text = "Nearby"
@@ -52,7 +50,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         label.isHidden = true
         return label
     }()
-    
+
     private func updateNearbyLabelText(_ count: Int) {
         let text = "  • \(count) nearby"
         let paragraphStyle = NSMutableParagraphStyle()
@@ -65,29 +63,38 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
                 .font: Fonts.callout.medium,
                 .foregroundColor: UIColor.black,
                 .paragraphStyle: paragraphStyle,
-                .baselineOffset: 2
+                .baselineOffset: 2,
             ]
         )
         nearbyLabel.attributedText = attributedString
         nearbyLabel.isHidden = count == 0
     }
-    
+
     private let groupNameField: UITextField = {
         let tf = UITextField()
-        tf.placeholder = "What is this group called?"
-        tf.textColor = .grey
+        let placeholderText = "What is this group called?"
+        let placeholderColor = UIColor.grey
+        let attributes: [NSAttributedString.Key: Any] = [
+            .foregroundColor: placeholderColor
+        ]
+        let attributedPlaceholder = NSAttributedString(
+            string: placeholderText, attributes: attributes
+        )
+        tf.textColor = .white
+        tf.attributedPlaceholder = attributedPlaceholder
         tf.font = Fonts.callout.regular
         tf.borderStyle = .none
-        tf.addTarget(nil, action: #selector(groupNameChanged), for: .editingChanged)
+        tf.addTarget(
+            nil, action: #selector(groupNameChanged), for: .editingChanged)
         return tf
     }()
-    
+
     private let underline: UIView = {
         let view = UIView()
         view.backgroundColor = .lightGreen
         return view
     }()
-    
+
     private let doneButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Done", for: .normal)
@@ -97,7 +104,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         button.layer.cornerRadius = 24
         return button
     }()
-    
+
     private let memberLabel: UILabel = {
         let label = UILabel()
         label.text = "Members"
@@ -105,14 +112,15 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         label.textAlignment = .left
         return label
     }()
-    
+
     private let memberScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsHorizontalScrollIndicator = false
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
+        scrollView.contentInset = UIEdgeInsets(
+            top: 0, left: 0, bottom: 0, right: 20)
         return scrollView
     }()
-    
+
     private let memberStack: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -120,7 +128,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         sv.alignment = .top
         return sv
     }()
-    
+
     private let addPeopleLabel: UILabel = {
         let label = UILabel()
         label.text = "Add Member"
@@ -128,7 +136,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         label.textAlignment = .left
         return label
     }()
-    
+
     private let addPeopleHeaderStack: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
@@ -137,7 +145,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         sv.distribution = .fill
         return sv
     }()
-    
+
     private let nearbyBadgeContainer: UIView = {
         let container = UIView()
         container.translatesAutoresizingMaskIntoConstraints = false
@@ -146,22 +154,30 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         container.clipsToBounds = true
         return container
     }()
-    
+
     private let nearbyBadge = NearbyLabel(count: 0)
-    
+
     private let nearbyScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsHorizontalScrollIndicator = false
-        scrollView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 20)
+        scrollView.contentInset = UIEdgeInsets(
+            top: 0, left: 0, bottom: 0, right: 20)
         return scrollView
     }()
-    
+
     private let nearbyStack: UIStackView = {
         let sv = UIStackView()
         sv.axis = .horizontal
         sv.spacing = 12
         sv.alignment = .center
         return sv
+    }()
+    
+    private let activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView()
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.color = .black
+        return activityIndicator
     }()
 
     override func viewDidLoad() {
@@ -173,24 +189,33 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         view.addSubview(addPeopleHeaderStack)
         addPeopleHeaderStack.addArrangedSubview(addPeopleLabel)
         addPeopleHeaderStack.addArrangedSubview(nearbyBadgeContainer)
-        
+
         nearbyBadgeContainer.addSubview(nearbyBadge)
         nearbyBadge.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nearbyBadge.topAnchor.constraint(equalTo: nearbyBadgeContainer.topAnchor, constant: 8),
-            nearbyBadge.bottomAnchor.constraint(equalTo: nearbyBadgeContainer.bottomAnchor, constant: -8),
-            nearbyBadge.leadingAnchor.constraint(equalTo: nearbyBadgeContainer.leadingAnchor, constant: 12),
-            nearbyBadge.trailingAnchor.constraint(equalTo: nearbyBadgeContainer.trailingAnchor, constant: -12),
-            nearbyBadgeContainer.heightAnchor.constraint(equalToConstant: 32)
+            nearbyBadge.topAnchor.constraint(
+                equalTo: nearbyBadgeContainer.topAnchor, constant: 8),
+            nearbyBadge.bottomAnchor.constraint(
+                equalTo: nearbyBadgeContainer.bottomAnchor, constant: -8),
+            nearbyBadge.leadingAnchor.constraint(
+                equalTo: nearbyBadgeContainer.leadingAnchor, constant: 12),
+            nearbyBadge.trailingAnchor.constraint(
+                equalTo: nearbyBadgeContainer.trailingAnchor, constant: -12),
+            nearbyBadgeContainer.heightAnchor.constraint(equalToConstant: 32),
         ])
-        doneButton.addTarget(self, action: #selector(doneTapped), for: .touchUpInside)
+        doneButton.addTarget(
+            self, action: #selector(doneTapped), for: .touchUpInside)
     }
-    
+
     private func setUpLayout() {
-        [initialCircle, groupNameLabel, groupNameField, underline, memberLabel, memberScrollView, memberStack, addPeopleHeaderStack, nearbyScrollView, nearbyStack, doneButton].forEach {
-                $0.translatesAutoresizingMaskIntoConstraints = false
+        [
+            initialCircle, groupNameLabel, groupNameField, underline,
+            memberLabel, memberScrollView, memberStack, addPeopleHeaderStack,
+            nearbyScrollView, nearbyStack, doneButton,
+        ].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
         }
-        
+
         view.addSubview(initialCircle)
         view.addSubview(groupNameLabel)
         view.addSubview(groupNameField)
@@ -204,146 +229,189 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
         view.addSubview(doneButton)
 
         NSLayoutConstraint.activate([
-            initialCircle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
-                        initialCircle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                        initialCircle.widthAnchor.constraint(equalToConstant: 120),
-                        initialCircle.heightAnchor.constraint(equalToConstant: 120),
+            initialCircle.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            initialCircle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            initialCircle.widthAnchor.constraint(equalToConstant: 120),
+            initialCircle.heightAnchor.constraint(equalToConstant: 120),
 
-                        groupNameLabel.topAnchor.constraint(equalTo: initialCircle.bottomAnchor, constant: 32),
-                        groupNameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            groupNameLabel.topAnchor.constraint(
+                equalTo: initialCircle.bottomAnchor, constant: 32),
+            groupNameLabel.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
 
-                        groupNameField.topAnchor.constraint(equalTo: groupNameLabel.bottomAnchor, constant: 8),
-                        groupNameField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        groupNameField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-                        groupNameField.heightAnchor.constraint(equalToConstant: 40),
+            groupNameField.topAnchor.constraint(
+                equalTo: groupNameLabel.bottomAnchor, constant: 8),
+            groupNameField.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            groupNameField.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -24),
+            groupNameField.heightAnchor.constraint(equalToConstant: 40),
 
-                        underline.topAnchor.constraint(equalTo: groupNameField.bottomAnchor, constant: 4),
-                        underline.leadingAnchor.constraint(equalTo: groupNameField.leadingAnchor),
-                        underline.trailingAnchor.constraint(equalTo: groupNameField.trailingAnchor),
-                        underline.heightAnchor.constraint(equalToConstant: 1),
+            underline.topAnchor.constraint(
+                equalTo: groupNameField.bottomAnchor, constant: 4),
+            underline.leadingAnchor.constraint(
+                equalTo: groupNameField.leadingAnchor),
+            underline.trailingAnchor.constraint(
+                equalTo: groupNameField.trailingAnchor),
+            underline.heightAnchor.constraint(equalToConstant: 1),
 
-                        memberLabel.topAnchor.constraint(equalTo: underline.bottomAnchor, constant: 24),
-                        memberLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        memberLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            memberLabel.topAnchor.constraint(
+                equalTo: underline.bottomAnchor, constant: 24),
+            memberLabel.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            memberLabel.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -24),
 
-                        memberScrollView.topAnchor.constraint(equalTo: memberLabel.bottomAnchor, constant: 12),
-                        memberScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        memberScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-                        memberScrollView.heightAnchor.constraint(equalToConstant: 80),
-                        
-                        memberStack.topAnchor.constraint(equalTo: memberScrollView.topAnchor),
-                        memberStack.leadingAnchor.constraint(equalTo: memberScrollView.leadingAnchor),
-                        memberStack.trailingAnchor.constraint(equalTo: memberScrollView.trailingAnchor, constant: -20),
-                        memberStack.bottomAnchor.constraint(equalTo: memberScrollView.bottomAnchor),
-                        memberStack.heightAnchor.constraint(equalTo: memberScrollView.heightAnchor),
+            memberScrollView.topAnchor.constraint(
+                equalTo: memberLabel.bottomAnchor, constant: 12),
+            memberScrollView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            memberScrollView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -24),
+            memberScrollView.heightAnchor.constraint(equalToConstant: 80),
 
-                        addPeopleHeaderStack.topAnchor.constraint(equalTo: memberScrollView.bottomAnchor, constant: 24),
-                        addPeopleHeaderStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        addPeopleHeaderStack.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -24),
+            memberStack.topAnchor.constraint(
+                equalTo: memberScrollView.topAnchor),
+            memberStack.leadingAnchor.constraint(
+                equalTo: memberScrollView.leadingAnchor),
+            memberStack.trailingAnchor.constraint(
+                equalTo: memberScrollView.trailingAnchor, constant: -20),
+            memberStack.bottomAnchor.constraint(
+                equalTo: memberScrollView.bottomAnchor),
+            memberStack.heightAnchor.constraint(
+                equalTo: memberScrollView.heightAnchor),
 
-                        nearbyScrollView.topAnchor.constraint(equalTo: addPeopleHeaderStack.bottomAnchor, constant: 12),
-                        nearbyScrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        nearbyScrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-                        nearbyScrollView.heightAnchor.constraint(equalToConstant: 80),
-                        
-                        nearbyStack.topAnchor.constraint(equalTo: nearbyScrollView.topAnchor),
-                        nearbyStack.leadingAnchor.constraint(equalTo: nearbyScrollView.leadingAnchor),
-                        nearbyStack.trailingAnchor.constraint(equalTo: nearbyScrollView.trailingAnchor, constant: -20),
-                        nearbyStack.bottomAnchor.constraint(equalTo: nearbyScrollView.bottomAnchor),
-                        nearbyStack.heightAnchor.constraint(equalTo: nearbyScrollView.heightAnchor),
+            addPeopleHeaderStack.topAnchor.constraint(
+                equalTo: memberScrollView.bottomAnchor, constant: 24),
+            addPeopleHeaderStack.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            addPeopleHeaderStack.trailingAnchor.constraint(
+                lessThanOrEqualTo: view.trailingAnchor, constant: -24),
 
-                        doneButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
-                        doneButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-                        doneButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-                        doneButton.heightAnchor.constraint(equalToConstant: 48)
+            nearbyScrollView.topAnchor.constraint(
+                equalTo: addPeopleHeaderStack.bottomAnchor, constant: 12),
+            nearbyScrollView.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            nearbyScrollView.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -24),
+            nearbyScrollView.heightAnchor.constraint(equalToConstant: 80),
+
+            nearbyStack.topAnchor.constraint(
+                equalTo: nearbyScrollView.topAnchor),
+            nearbyStack.leadingAnchor.constraint(
+                equalTo: nearbyScrollView.leadingAnchor),
+            nearbyStack.trailingAnchor.constraint(
+                equalTo: nearbyScrollView.trailingAnchor, constant: -20),
+            nearbyStack.bottomAnchor.constraint(
+                equalTo: nearbyScrollView.bottomAnchor),
+            nearbyStack.heightAnchor.constraint(
+                equalTo: nearbyScrollView.heightAnchor),
+
+            doneButton.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -24),
+            doneButton.leadingAnchor.constraint(
+                equalTo: view.leadingAnchor, constant: 24),
+            doneButton.trailingAnchor.constraint(
+                equalTo: view.trailingAnchor, constant: -24),
+            doneButton.heightAnchor.constraint(equalToConstant: 48),
         ])
     }
-    
+
     @objc private func groupNameChanged() {
         presenter?.didChangeGroupName(groupNameField.text ?? "")
     }
-    
+
     @objc private func doneTapped() {
-        presenter?.didTapDoneButton()
+        presenter?.createGroup()
     }
-    
+
     @objc private func addMembersTapped() {
         presenter?.didTapAddMembers()
     }
-    
+
     @objc private func plusButtonTouchDown(_ sender: UIButton) {
         UIView.animate(withDuration: 0.1) {
             sender.alpha = 0.7
             sender.tintColor = .lightGreen.withAlphaComponent(0.7)
         }
     }
-    
+
     @objc private func plusButtonTouchUp(_ sender: UIButton) {
         UIView.animate(withDuration: 0.1) {
             sender.alpha = 1.0
             sender.tintColor = .lightGreen
         }
     }
-    
+
     func updateInitialsCircle(with initials: String) {
         initialCircle.text = initials
     }
-    
-    func reloadMembers(with members: [String]) {
+
+    func reloadMembers(with members: [User]) {
         memberStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        for name in members {
-            let isCurrentUser = name.lowercased() == "you"
+        for user in members {
+            let isCurrentUser = user.id == presenter?.getCUrrentUser()?.id
             let memberView = createMemberView(
-                name: name,
+                name: user.name,
                 isCurrentUser: isCurrentUser,
                 onRemoveTapped: { [weak self] in
-                    self?.presenter?.didRemoveMember(name: name)
+                    self?.presenter?.didRemoveMember(id: user.id)
                 }
             )
             memberStack.addArrangedSubview(memberView)
         }
         updateDoneButtonState(members: members)
     }
-    
-    func renderNearbyAvatars(_ users: [String]) {
+
+    func renderNearbyAvatars(_ users: [User]) {
         nearbyStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
 
         let plusButton = UIButton(type: .system)
         plusButton.translatesAutoresizingMaskIntoConstraints = false
         plusButton.isUserInteractionEnabled = true
-        
-        let config = UIImage.SymbolConfiguration(pointSize: 56, weight: .regular)
-        let image = UIImage(systemName: "plus.circle.fill", withConfiguration: config)
+
+        let config = UIImage.SymbolConfiguration(
+            pointSize: 56, weight: .regular)
+        let image = UIImage(
+            systemName: "plus.circle.fill", withConfiguration: config)
         plusButton.setImage(image, for: .normal)
         plusButton.setImage(image, for: .highlighted)
         plusButton.tintColor = .lightGreen
         plusButton.setTitleColor(.lightGreen, for: .normal)
-        plusButton.setTitleColor(.lightGreen.withAlphaComponent(0.7), for: .highlighted)
+        plusButton.setTitleColor(
+            .lightGreen.withAlphaComponent(0.7), for: .highlighted)
         plusButton.backgroundColor = .clear
-        
+
         plusButton.widthAnchor.constraint(equalToConstant: 56).isActive = true
         plusButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
-        
-        plusButton.addTarget(self, action: #selector(addMembersTapped), for: .touchUpInside)
-        plusButton.addTarget(self, action: #selector(plusButtonTouchDown), for: .touchDown)
-        plusButton.addTarget(self, action: #selector(plusButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        
+
+        plusButton.addTarget(
+            self, action: #selector(addMembersTapped), for: .touchUpInside)
+        plusButton.addTarget(
+            self, action: #selector(plusButtonTouchDown), for: .touchDown)
+        plusButton.addTarget(
+            self, action: #selector(plusButtonTouchUp),
+            for: [.touchUpInside, .touchUpOutside, .touchCancel])
+
         nearbyStack.addArrangedSubview(plusButton)
 
         for user in users {
-            let nearbyUser = NearbyUserView(name: user, bgColor: .grey)
+            let nearbyUser = NearbyUserView(user: user, bgColor: .grey)
             nearbyUser.isUserInteractionEnabled = true
-            let tap = UITapGestureRecognizer(target: self, action: #selector(nearbyAvatarTapped(_:)))
+            let tap = UITapGestureRecognizer(
+                target: self, action: #selector(nearbyAvatarTapped(_:)))
             nearbyUser.addGestureRecognizer(tap)
             nearbyStack.addArrangedSubview(nearbyUser)
         }
-        
+
         nearbyBadge.setText(users.count)
     }
 
     private func makeAvatarCircle(for name: String) -> UILabel {
         let label = UILabel()
-        let initials = name.split(separator: " ").compactMap { $0.first }.prefix(2).map { String($0) }.joined().uppercased()
+        let initials = name.split(separator: " ").compactMap { $0.first }
+            .prefix(2).map { String($0) }.joined().uppercased()
         label.text = initials
         label.applyStyle(Fonts.title3.bold, color: .darkBlue)
         label.backgroundColor = .gray
@@ -358,27 +426,59 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterIn
 
     @objc private func nearbyAvatarTapped(_ sender: UITapGestureRecognizer) {
         guard let nearbyUser = sender.view as? NearbyUserView else { return }
-        presenter?.didSelectNearbyUser(name: nearbyUser.name)
+        presenter?.didSelectNearbyUser(id: nearbyUser.user.id)
+    }
+    
+    
+    func showError(_ error: any Error) {
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    func showLoading() {
+        doneButton.setTitle(nil, for: .normal)
+        doneButton.setImage(nil, for: .normal)
+        
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        doneButton.addSubview(activityIndicator)
+        
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: doneButton.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: doneButton.centerYAnchor)
+        ])
+        
+        activityIndicator.startAnimating()
+        doneButton.isEnabled = false
+    }
+
+    func hideLoading() {
+        activityIndicator.stopAnimating()
+        activityIndicator.removeFromSuperview()
+        
+        doneButton.setTitle("Done", for: .normal)
     }
 
 }
 
 #if DEBUG
-import SwiftUI
+    import SwiftUI
 
-struct CreateGroupPreview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> CreateGroupViewController {
-        return CreateGroupViewController()
+    struct CreateGroupPreview: UIViewControllerRepresentable {
+        func makeUIViewController(context: Context) -> CreateGroupViewController
+        {
+            return CreateGroupViewController()
+        }
+        func updateUIViewController(
+            _ uiViewController: CreateGroupViewController, context: Context
+        ) {}
     }
-    func updateUIViewController(_ uiViewController: CreateGroupViewController, context: Context) {}
-}
 
-struct CreateGroupViewController_Preview: PreviewProvider {
-    static var previews: some View {
-        CreateGroupPreview()
-            .edgesIgnoringSafeArea(.all)
-//            .previewDisplayName("UIKit: Sign In Screen")
+    struct CreateGroupViewController_Preview: PreviewProvider {
+        static var previews: some View {
+            CreateGroupPreview()
+                .edgesIgnoringSafeArea(.all)
+                .previewDisplayName("UIKit: Sign In Screen")
+        }
     }
-}
 #endif
-

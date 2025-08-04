@@ -6,10 +6,22 @@
 //
 import UIKit
 
+
+protocol HomeViewProtocol: AnyObject {
+    func showWelcomeMessages()
+    func showGroupList()
+    func hideWelcomeMessages()
+    func showResult(from entity: GroupsEntity)
+    func showError(_ error: Error)
+    func showLoading()
+    func hideLoading()
+}
+
 protocol HomePresenterProtocol: AnyObject {
     func viewDidLoad()
     func didTapAddButton()
     func didTapProfileButton()
+    func fetchGroups()
 }
 
 class HomePresenter: HomePresenterProtocol {
@@ -28,9 +40,24 @@ class HomePresenter: HomePresenterProtocol {
     }
 
     func viewDidLoad() {
-        interactor?.fetchInitialState()
+        
     }
-
+    
+    func fetchGroups() {
+        view?.showLoading()
+        interactor?.fetchGroups { [weak self] result in
+            DispatchQueue.main.async {
+                self?.view?.hideLoading()
+                switch result {
+                case .success(let entity):
+                    self?.view?.showResult(from: entity)
+                case .failure(let error):
+                    self?.view?.showError(error)
+                }
+            }
+        }
+    }
+    
     func didTapAddButton() {
         //        router?.navigateToSheets()
         if let vc = router?.createNewSheetView() {

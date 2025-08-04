@@ -6,9 +6,15 @@
 //
 import Foundation
 
+protocol SignInViewProtocol: AnyObject {
+    func showError(_ error: Error)
+    func showLoading()
+    func hideLoading()
+}
+
 protocol SignInPresenterProtocol: Presentable {
     func signIn(with payload: SignInRequestEntity)
-    func navigateToHome(signInEntity: SignInEntity)
+    func navigateToHome()
 }
 
 class SignInPresenter: SignInPresenterProtocol {
@@ -35,7 +41,7 @@ class SignInPresenter: SignInPresenterProtocol {
                 self?.view?.hideLoading()
                 switch result {
                 case .success(let entity):
-                    self?.view?.showResult(from: entity)
+                    self?.navigateToHome()
                 case .failure(let error):
                     self?.view?.showError(error)
                 }
@@ -43,7 +49,7 @@ class SignInPresenter: SignInPresenterProtocol {
         }
     }
 
-    func navigateToHome(signInEntity: SignInEntity) {
-        router.navigateToHomeView(signInEntity)
+    func navigateToHome() {
+        router.navigateToHomeView()
     }
 }

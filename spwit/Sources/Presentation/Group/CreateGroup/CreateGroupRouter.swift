@@ -1,58 +1,61 @@
-//
-//  CreateGroupRouter.swift
-//  Spwit
-//
-//  Created by Shafa Tiara Tsabita Himawan on 02/08/25.
-//
-
 import UIKit
 
 protocol CreateGroupRouterProtocol: AnyObject {
-    func navigateToAddMembers()
-    func navigateToGroupDetail()
+    func navigateToAddMembers(currentMembers: [User])
+    func navigateToHome()
     func back()
     func dismiss()
-
 }
 
-class CreateGroupRouter: CreateGroupRouterProtocol {
-    var router: Router?
+final class CreateGroupRouter: CreateGroupRouterProtocol {
     private weak var viewController: UIViewController?
-    
-    static func createModule(router: Router) -> UIViewController{
+    var router: Router?
+
+    static func createModule(router: Router) -> UIViewController {
         let view = CreateGroupViewController()
         let presenter = CreateGroupPresenter()
-        let createGroupRouter = CreateGroupRouter()
-        let interactor = CreateGroupInteractor()
-        
-        createGroupRouter.router = router
-        createGroupRouter.viewController = view
-        
-        // Set router in view controller
-//        view.router = router
-        
+        let cgRouter = CreateGroupRouter()
+        let interactor = CreateGroupInteractor(groupUsecase: DIContainer.shared.groupUsecase)
+
+        cgRouter.router = router
+        cgRouter.viewController = view
+
         view.presenter = presenter
         presenter.view = view
-        presenter.router = createGroupRouter
         presenter.interactor = interactor
-        
+        presenter.router = cgRouter
+
         return view
     }
-    
-    func navigateToAddMembers() {
+
+    // MARK: – Navigation
+
+    func navigateToAddMembers(currentMembers: [User]) {
+        guard let navigator = router else { return }
+
+        let addVC = SearchPeopleRouter.createModule(
+            router: navigator,
+            preselectedUsers: currentMembers
+        ) { [weak self] selected in
+            guard
+                let vc = self?.viewController as? CreateGroupViewController,
+                let presenter = vc.presenter as? CreateGroupPresenter
+            else { return }
+            
+            
+            print(selected.count)
+
+            presenter.didAddUsersFromSearch(selected)
+        }
+
+        navigator.push(addVC)
+    }
+
+    func navigateToHome() {
         guard let sceneNavigator = router else { return }
-        
-        let addMembersVC = AddMembersRouter.createModule(router: sceneNavigator)
-        sceneNavigator.push(addMembersVC)
+        sceneNavigator.popToRootViewController(animated: true)
     }
     
-    func navigateToGroupDetail() {
-//        this is code to group detail
-    }
-    func back() {
-//        to back
-    }
-    func dismiss() {
-        viewController?.dismiss(animated: true)
-    }
+    func back() { router?.pop() }
+    func dismiss() { viewController?.dismiss(animated: true) }
 }

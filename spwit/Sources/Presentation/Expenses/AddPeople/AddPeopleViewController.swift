@@ -20,7 +20,6 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
         MemberEntity(name:"Raiza Hafida "),
         MemberEntity(name:"Shafa Tiara"),
         MemberEntity(name:"Nada Hanifah"),
-        
     ]
     
     let peoples : [MemberEntity] = [

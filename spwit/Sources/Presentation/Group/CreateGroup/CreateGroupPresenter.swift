@@ -1,67 +1,139 @@
-//
-//  CreateGroupPresenter.swift
-//  Spwit
-//
-//  Created by Shafa Tiara Tsabita Himawan on 02/08/25.
-//
-
 import UIKit
-protocol CreateGroupPresenterProtocol: AnyObject {
-    func viewDidLoad()
-    func didChangeGroupName(_ name: String)
-    func didTapDoneButton()
-    func didTapAddMembers()
-    func didSelectNearbyUser(name: String)
-    func didRemoveMember(name: String)
+
+protocol CreateGroupProtocol: AnyObject {
+    func updateInitialsCircle(with initials: String)
+    func reloadMembers(with members: [User])
+    func renderNearbyAvatars(_ users: [User])
+    func showError(_ error: Error)
+    func showLoading()
+    func hideLoading()
 }
 
-class CreateGroupPresenter: CreateGroupPresenterProtocol {
+protocol CreateGroupPresenterProtocol: AnyObject {
+    func viewDidLoad()
+    func createGroup()
+    func didChangeGroupName(_ name: String)
+    func didTapAddMembers()
+    func didSelectNearbyUser(id: String)
+    func didRemoveMember(id: String)
+    func didAddUsersFromSearch(_ users: [User])
+    func getCUrrentUser() -> User?
+}
 
-    weak var view : CreateGroupProtocol?
+final class CreateGroupPresenter: CreateGroupPresenterProtocol {
+    weak var view: CreateGroupProtocol?
     var interactor: CreateGroupInteractorProtocol?
     var router: CreateGroupRouterProtocol?
-    var currentMembers: [String] = ["You"]
-    var allNearbyUsers: [String] = ["Shafa Tiara", "Fariz Sidik", "Satria Mahatir", "Nada Nadu", "Bare Bari", "Adit Raiza"]
 
+    private var groupName: String = ""
     
-    private var groupName : String = ""
+    var currentUser: User?
+    private(set) var currentMembers: [User] = []
     
-    private func filteredNearbyUsers() -> [String] {
-        return allNearbyUsers.filter { !currentMembers.contains($0) }
+    private let nearbyUsers: [User] = [
+//        User(id: "11", name: "Shafa Tiara", username: "", appleID: "", email: "", createdAt: .now),
+//        User(id: "12", name: "Fariz Sidik", username: "", appleID: "", email: "", createdAt: .now),
+//        User(id: "13", name: "Satria Mahatir", username: "", appleID: "", email: "", createdAt: .now),
+//        User(id: "14", name: "Nada Nadu", username: "", appleID: "", email: "", createdAt: .now),
+//        User(id: "15", name: "Bare Bari", username: "",  appleID: "", email: "", createdAt: .now),
+//        User(id: "16", name: "Adit Raiza", username: "", appleID: "", email: "", createdAt: .now)
+    ]
+
+    // MARK: – Lifecycle
+
+    func viewDidLoad() {
+        interactor?.getCurrentUser { currentUser in
+            DispatchQueue.main.async {
+                self.currentUser = User(
+                    id: currentUser!.id!,
+                    name: currentUser!.name ?? "You",
+                    username: currentUser!.username ?? "user",
+                    appleID: currentUser!.appleId ?? "",
+                    email: currentUser!.email ?? "email@example.com",
+                    createdAt: .now
+                )
+                
+                if currentUser != nil {
+                    self.currentMembers.append(self.currentUser!)
+                }
+                
+                self.updateUI()
+            }
+            
+        }
     }
+    
+    func getCUrrentUser() -> User? {
+        return currentUser
+    }
+
+    // MARK: – Input from View
 
     func didChangeGroupName(_ name: String) {
         groupName = name
-        let intial = name.split(separator: " ").compactMap { $0.first }.prefix(2)
-        view?.updateInitialsCircle(with: intial.map{ String($0) }.joined().uppercased())
+        let initials = name.split(separator: " ")
+                           .compactMap { $0.first }
+                           .prefix(2)
+                           .map(String.init)
+                           .joined()
+                           .uppercased()
+        view?.updateInitialsCircle(with: initials)
+    }
+
+    func createGroup() {
+        let payload = CreateGroupRequestEntity(name: groupName, memberIds: currentMembers.map(\.id))
+        view?.showLoading()
+        interactor?.createGroup(payload: payload) { [weak self] result in
+            DispatchQueue.main.async {
+                self?.view?.hideLoading()
+                switch result {
+                case .success(_):
+                    self?.navigateToHome()
+                case .failure(let error):
+                    self?.view?.showError(error)
+                }
+            }
+        }
     }
     
-    func viewDidLoad() {
-        view?.updateInitialsCircle(with: "")
-        view?.reloadMembers(with: currentMembers)
-        view?.renderNearbyAvatars(filteredNearbyUsers())
+    func navigateToHome() {
+        router?.navigateToHome()
     }
-    
-    func didTapDoneButton() {
-        
-    }
-    
+
     func didTapAddMembers() {
-        router?.navigateToAddMembers()
+        router?.navigateToAddMembers(currentMembers: currentMembers)
     }
-    
-    func didSelectNearbyUser(name: String) {
-        guard !currentMembers.contains(name) else { return }
-        currentMembers.append(name)
+
+    func didSelectNearbyUser(id: String) {
+        guard
+            !currentMembers.contains(where: { $0.id == id }),
+            let user = nearbyUsers.first(where: { $0.id == id })
+        else { return }
+
+        currentMembers.append(user)
+        updateUI()
+    }
+
+    func didRemoveMember(id: String) {
+        currentMembers.removeAll { $0.id == id && $0.name.lowercased() != "you" }
+        updateUI()
+    }
+
+    func didAddUsersFromSearch(_ users: [User]) {
+        print(users.count)
+        for u in users where !currentMembers.contains(where: { $0.id == u.id }) {
+            currentMembers.append(u)
+        }
+        updateUI()
+    }
+
+    // MARK: – Private
+
+    private func updateUI() {
+        print("reload")
+        print(currentUser?.name ?? "no user")
         view?.reloadMembers(with: currentMembers)
-        view?.renderNearbyAvatars(filteredNearbyUsers())
+        let filtered = nearbyUsers.filter { n in !currentMembers.contains(where: { $0.id == n.id }) }
+        view?.renderNearbyAvatars(filtered)
     }
-    
-    func didRemoveMember(name: String) {
-        guard name.lowercased() != "you" else { return }
-        currentMembers.removeAll { $0 == name }
-        view?.reloadMembers(with: currentMembers)
-        view?.renderNearbyAvatars(filteredNearbyUsers())
-    }
-    
 }

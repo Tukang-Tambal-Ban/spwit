@@ -10,13 +10,17 @@ protocol GroupUsecase {
     func getGroups() async -> Result<GroupsEntity, Error>
     func createGroup(payload: CreateGroupRequestEntity) async throws -> Result<CreateGroupEntity, Error>
     func getGroupDetail(groupId: String) async -> Result<GroupDetailEntity, Error>
+    func getCurrentUser() async -> UserEntity?
 }
 
 class GroupUsecaseImpl: GroupUsecase {
+    
     private let repository: GroupRepository
+    private let persistenceRepo: UserPersistenceRepository
 
-    init(repository: GroupRepository) {
+    init(repository: GroupRepository, persistenceRepo: UserPersistenceRepository) {
         self.repository = repository
+        self.persistenceRepo = persistenceRepo
     }
 
     func getGroups() async -> Result<GroupsEntity, Error> {
@@ -45,5 +49,9 @@ class GroupUsecaseImpl: GroupUsecase {
         } catch {
             return .failure(error)
         }
+    }
+    
+    func getCurrentUser() async -> UserEntity? {
+        return persistenceRepo.getUser()
     }
 }

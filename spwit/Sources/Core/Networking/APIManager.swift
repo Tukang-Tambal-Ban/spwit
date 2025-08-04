@@ -12,7 +12,7 @@ struct EmptyParams: Codable {}
 
 class APIManager {
     static let shared = APIManager()
-    static let networkEnvironment: NetworkEnvironment = .dev
+    static let networkEnvironment: NetworkEnvironment = .stage
 
     private init() {}
 
@@ -33,7 +33,7 @@ class APIManager {
         AF.request(
             type.url,
             method: type.httpMethod,
-            parameters: params,
+            parameters: params is EmptyParams ? nil : params,
             encoder: type.encoder,
             headers: type.headers
         )
@@ -43,6 +43,7 @@ class APIManager {
             case .success(let decodedData):
                 completion(.success(decodedData))
             case .failure(let error):
+                print(error)
                 completion(.failure(error))
             }
         }

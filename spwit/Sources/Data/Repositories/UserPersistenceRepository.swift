@@ -9,7 +9,7 @@
 // Sources/Data/Repositories/UserPersistenceRepository.swift
 protocol UserPersistenceRepository {
     func saveUser(_ entity: SignInEntity)
-    func getUser() -> SignInEntity?
+    func getUser() -> UserEntity?
     func deleteUser()
 }
 
@@ -24,7 +24,7 @@ class UserPersistenceRepositoryImpl: UserPersistenceRepository {
         localDataSource.saveUser(entity)
     }
 
-    func getUser() -> SignInEntity? {
+    func getUser() -> UserEntity? {
         return localDataSource.getUser()
     }
 
