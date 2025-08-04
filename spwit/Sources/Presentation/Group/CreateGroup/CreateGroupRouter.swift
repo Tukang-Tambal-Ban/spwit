@@ -8,7 +8,7 @@
 import UIKit
 
 protocol CreateGroupRouterProtocol: AnyObject {
-    func navigateToAddPeople()
+    func navigateToAddMembers()
     func navigateToGroupDetail()
     func back()
     func dismiss()
@@ -17,31 +17,33 @@ protocol CreateGroupRouterProtocol: AnyObject {
 
 class CreateGroupRouter: CreateGroupRouterProtocol {
     var router: Router?
-
-    init(router: Router) {
-        self.router = router
-    }
-
     private weak var viewController: UIViewController?
     
     static func createModule(router: Router) -> UIViewController{
         let view = CreateGroupViewController()
         let presenter = CreateGroupPresenter()
-        let router = CreateGroupRouter(router: router)
+        let createGroupRouter = CreateGroupRouter()
         let interactor = CreateGroupInteractor()
+        
+        createGroupRouter.router = router
+        createGroupRouter.viewController = view
+        
+        // Set router in view controller
+//        view.router = router
         
         view.presenter = presenter
         presenter.view = view
-        presenter.router = router
+        presenter.router = createGroupRouter
         presenter.interactor = interactor
-        router.viewController = view
         
         return view
     }
     
-    func navigateToAddPeople() {
-//        this is code to nav add people
-        print("Nav to add people")
+    func navigateToAddMembers() {
+        guard let sceneNavigator = router else { return }
+        
+        let addMembersVC = AddMembersRouter.createModule(router: sceneNavigator)
+        sceneNavigator.push(addMembersVC)
     }
     
     func navigateToGroupDetail() {

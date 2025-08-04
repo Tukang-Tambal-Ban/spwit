@@ -10,7 +10,7 @@ protocol CreateGroupPresenterProtocol: AnyObject {
     func viewDidLoad()
     func didChangeGroupName(_ name: String)
     func didTapDoneButton()
-    func didTapAddPeople()
+    func didTapAddMembers()
     func didSelectNearbyUser(name: String)
     func didRemoveMember(name: String)
 }
@@ -46,8 +46,8 @@ class CreateGroupPresenter: CreateGroupPresenterProtocol {
         
     }
     
-    func didTapAddPeople() {
-        
+    func didTapAddMembers() {
+        router?.navigateToAddMembers()
     }
     
     func didSelectNearbyUser(name: String) {

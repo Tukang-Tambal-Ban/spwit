@@ -11,6 +11,7 @@ import UIKit
 protocol SearchPeoplePresenterProtocol : AnyObject {
     func didNextTapped()
     func didBackTapped()
+    func didAddTapped()
     func viewDidLoad()
 }
 
@@ -25,6 +26,11 @@ class SearchPeoplePresenter : SearchPeoplePresenterProtocol {
     
     func didNextTapped() {
         router?.navigateNextForm()
+    }
+    
+    func didAddTapped() {
+        // Handle add action - bisa navigate ke screen add people atau process selected people
+        router?.navigateToAddPeople()
     }
     
     func viewDidLoad() {

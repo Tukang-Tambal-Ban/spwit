@@ -1,35 +1,29 @@
+//
+//  AddMemberController.swift
+//  Spwit
+//
+//  Created by Shafa Tiara Tsabita Himawan on 04/08/25.
+//
+
 import UIKit
 
-struct GroupSection {
+struct GroupingSection {
     let title: String
     let items: [String]
     var isExpanded: Bool
     var selectedIndices: Set<Int>
 }
 
-class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class AddMembersViewController: UIViewController, UITableViewDataSource, UITabBarDelegate, UITableViewDelegate {
+    var presenter: AddMembersPresenter?
     
-    var presenter: SearchPeoplePresenter?
-    
-    var sections: [GroupSection] = [
-        GroupSection(
+    var sections: [GroupingSection] = [
+        GroupingSection(
             title: "People on Spwiwit",
             items: ["Adit Lucu", "Raiza Rawr", "Tyara UwU", "Syatria Ripki"],
             isExpanded: true,
             selectedIndices: []
         ),
-        GroupSection(
-            title: "Groups",
-            items: ["Group A", "Tukang Tambal Ban", "Tambal Sandal", "Tukang Mancing"],
-            isExpanded: false,
-            selectedIndices: []
-        ),
-//        GroupSection(
-//            title: "Group List New",
-//            items: ["Group New 1", "Group New 2", "Group New 3"],
-//            isExpanded: false,
-//            selectedIndices: []
-//        )
     ]
     
     let tableView = UITableView()
@@ -42,44 +36,46 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
     func setupUI() {
         view.backgroundColor = .darkBlue
         
-        // --- Navigation Bar Setup ---
-        title = "Search People"
+        // Navigation Bar Setup
+        title = "Add Members"
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
+        appearance.backgroundColor = UIColor.darkBlue
         appearance.titleTextAttributes = [
             .foregroundColor: UIColor.lightGreen,
             .font: UIFont.boldSystemFont(ofSize: 20)
         ]
+        
         navigationController?.navigationBar.tintColor = UIColor.lightGreen
         navigationController?.navigationBar.standardAppearance = appearance
         navigationController?.navigationBar.scrollEdgeAppearance = appearance
         navigationController?.navigationBar.compactAppearance = appearance
         
         // Back button
-        let backButton = UIBarButtonItem(
+        let leftBarButtonItem = UIBarButtonItem(
             image: UIImage(systemName: "chevron.left"),
             style: .plain,
             target: self,
             action: #selector(backTapped)
         )
-        navigationItem.leftBarButtonItem = backButton
         
         // Add button
-        let addButton = UIBarButtonItem(
+        let rightBarButtonItem = UIBarButtonItem(
             title: "Add",
             style: .plain,
             target: self,
             action: #selector(addTapped)
         )
-        navigationItem.rightBarButtonItem = addButton
         
-        // --- Search Bar ---
+        navigationItem.leftBarButtonItem = leftBarButtonItem
+        navigationItem.rightBarButtonItem = rightBarButtonItem
+
         let searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.textGrey
         ]
-        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "SearchPeople", attributes: attributes)
+        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "Search people", attributes: attributes)
         searchBar.searchTextField.leftView?.tintColor = .textGrey
         searchBar.searchTextField.backgroundColor = .transparantGrey
         searchBar.tintColor = .darkBlue
@@ -88,7 +84,6 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
         searchBar.searchTextField.textColor = .white
         view.addSubview(searchBar)
         
-        // --- TableView ---
         tableView.dataSource = self
         tableView.delegate = self
         tableView.separatorStyle = .none
@@ -108,8 +103,6 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
-    
-    // MARK: - TableView DataSource & Delegate
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
@@ -225,18 +218,16 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
         presenter?.didAddTapped()
     }
 }
-
-// MARK: - SwiftUI Preview (Jika Perlu)
 import SwiftUI
-struct SearchPeople_Preview: UIViewControllerRepresentable {
+struct AddMembers_Preview: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> some UIViewController {
-        SearchPeopleViewController()
+        AddMembersViewController()
     }
     func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
 }
 
-struct SearchPeople_PreviewProvider: PreviewProvider {
+struct AddMembers_PreviewProvider: PreviewProvider {
     static var previews: some View {
-        SearchPeople_Preview()
+        AddMembers_Preview()
     }
 }

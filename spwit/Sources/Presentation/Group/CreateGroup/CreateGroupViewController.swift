@@ -12,9 +12,9 @@ protocol CreateGroupProtocol: AnyObject {
     func renderNearbyAvatars(_ users: [String])
 }
 
-class CreateGroupViewController: UIViewController, CreateGroupProtocol {
+class CreateGroupViewController: UIViewController, CreateGroupProtocol, RouterInjectable {
     
-    
+    var router: Router?
     var presenter: CreateGroupPresenterProtocol?
     
     private func updateDoneButtonState(members: [String]) {
@@ -267,9 +267,8 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol {
         presenter?.didTapDoneButton()
     }
     
-    @objc private func addPeopleTapped() {
-        print("Plus button tapped!") // Debug print
-        presenter?.didTapAddPeople()
+    @objc private func addMembersTapped() {
+        presenter?.didTapAddMembers()
     }
     
     @objc private func plusButtonTouchDown(_ sender: UIButton) {
@@ -325,7 +324,7 @@ class CreateGroupViewController: UIViewController, CreateGroupProtocol {
         plusButton.widthAnchor.constraint(equalToConstant: 56).isActive = true
         plusButton.heightAnchor.constraint(equalToConstant: 56).isActive = true
         
-        plusButton.addTarget(self, action: #selector(addPeopleTapped), for: .touchUpInside)
+        plusButton.addTarget(self, action: #selector(addMembersTapped), for: .touchUpInside)
         plusButton.addTarget(self, action: #selector(plusButtonTouchDown), for: .touchDown)
         plusButton.addTarget(self, action: #selector(plusButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
         
