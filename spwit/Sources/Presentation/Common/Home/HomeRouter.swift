@@ -35,8 +35,8 @@ class HomeRouter: HomeRouterProtocol, RouterInjectable {
         return CreateNewSheetRouter.createModule(router: router)
     }
 
-//    static func createModule(router: Router, for signIn: SignInEntity) -> UIViewController {
-    static func createModule(router: Router) -> UIViewController {
+    static func createModule(router: Router, for signIn: SignInEntity) -> UIViewController {
+//    static func createModule(router: Router) -> UIViewController {
         let view = HomeViewController()
         let interactor = HomeInteractor()
         let pageRouter = HomeRouter(router: router, viewController: view)

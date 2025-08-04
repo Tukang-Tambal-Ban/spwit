@@ -180,7 +180,6 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
         setupUIAddMember()
         setupUIAddPeople()
         setupUIAddGroup()
-<<<<<<< HEAD:spwit/Sources/Presentation/Expenses/AddPeople/AddMemberViewController.swift
         setupNavBar()
         
     }
@@ -233,8 +232,7 @@ class AddPeopleViewController: UIViewController, AddPeopleViewProtocol, UICollec
     
     @objc func nextTapped() {
         presenter?.didNextTapped()
-=======
->>>>>>> e654a5c (refactor: memperbaiki UI dan logic dari add people nearby in create group):spwit/Sources/Presentation/ManualPayment/Expenses/AddMember/AddMemberViewController.swift
+
     }
     
     private func setupUIAddGroup() {
