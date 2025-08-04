@@ -6,7 +6,14 @@
 
 
 import UIKit
-class AssignExpenseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+
+protocol AssignExpenseViewProtocol: AnyObject {
+
+}
+
+class AssignExpenseViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, AssignExpenseViewProtocol {
+    var presenter: AssignExpensePresenterProtocol?
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         expenseList.count
     }

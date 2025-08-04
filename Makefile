@@ -28,7 +28,7 @@ env:
 	else \
 		echo "$(RED)Error: .env file not found$(NC)"; \
 		echo "$(YELLOW)Creating default .env file...$(NC)"; \
-		echo "TUIST_BUNDLE_ID=com.bernanda" > .env; \
+		echo "TUIST_BUNDLE_ID=com.ada.il" > .env; \
 		echo "$(GREEN)✓ Created default .env file$(NC)"; \
 	fi
 

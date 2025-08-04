@@ -8,16 +8,28 @@
 import UIKit
 
 protocol CreateGroupInteractorProtocol: AnyObject {
-    func postGroup()
-    func nearby() -> [String]
+    func createGroup(payload: CreateGroupRequestEntity, completion: @escaping (Result<CreateGroupEntity, Error>) -> Void)
+    func getCurrentUser(completions: @escaping (UserEntity?) -> Void)
 }
 
 class CreateGroupInteractor: CreateGroupInteractorProtocol{
-    func postGroup() {
-//        post group to api
+    private let groupUsecase: GroupUsecase
+
+    init(groupUsecase: GroupUsecase) {
+        self.groupUsecase = groupUsecase
+    }
+
+    func createGroup(payload: CreateGroupRequestEntity, completion: @escaping (Result<CreateGroupEntity, Error>) -> Void) {
+        Task {
+            let result = try await groupUsecase.createGroup(payload: payload)
+            completion(result)
+        }
     }
     
-    func nearby() -> [String] {
-        return ["Raiza", "Budi"] // dummy
+    func getCurrentUser(completions: @escaping (UserEntity?) -> Void) {
+        Task {
+            let result = await groupUsecase.getCurrentUser()
+            completions(result)
+        }
     }
 }

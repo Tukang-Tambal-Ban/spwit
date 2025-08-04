@@ -1,48 +1,46 @@
-//
-//   ExpensesRouter.swift
-//  Spwit
-//
-//  Created by Muhammad Rifqi Syatria on 8/1/25.
-//
 import UIKit
 
-
-protocol SearchPeopleRouterProtocol : AnyObject {
+protocol SearchPeopleRouterProtocol: AnyObject {
     func navigateBack()
-    func navigateNextForm()
-    func navigateToAddPeople()
+    func navigateToAddPeople(selected: [User])
 }
 
-
-class SearchPeopleRouter: SearchPeopleRouterProtocol{
+final class SearchPeopleRouter: SearchPeopleRouterProtocol {
     var router: Router?
+    private let onUsersSelected: ([User]) -> Void
 
-    init(router: Router) {
+    init(router: Router, onUsersSelected: @escaping ([User]) -> Void) {
         self.router = router
+        self.onUsersSelected = onUsersSelected
     }
 
-    
-    static func createModule(router: Router) -> UIViewController {
+    static func createModule(
+        router: Router,
+        preselectedUsers: [User],
+        onUsersSelected: @escaping ([User]) -> Void
+    ) -> UIViewController {
         let view = SearchPeopleViewController()
-        let presenter = SearchPeoplePresenter()
-        let router = SearchPeopleRouter(router: router)
-        presenter.router = router
+        let interactor = SearchPeopleInteractor(userUsecase: DIContainer.shared.userUsecase)
+        let presenter = SearchPeoplePresenter(
+            preselected: preselectedUsers,
+            onSelected: onUsersSelected
+        )
+        let spRouter = SearchPeopleRouter(
+            router: router, onUsersSelected: onUsersSelected
+        )
+
+        presenter.router = spRouter
+        presenter.view = view
+        presenter.interactor = interactor
         view.presenter = presenter
-       
         return view
     }
-    
-    
-    func navigateNextForm() {
-        
-    }
-    
-    func navigateBack() {
-        router?.pop()
-    }
-    
-    func navigateToAddPeople() {
-        router?.pop()
-    }
 
+    func navigateBack() { router?.pop() }
+    func navigateToAddPeople(selected: [User]) {
+        print("lolll")
+        print(selected.count)
+        onUsersSelected(selected)
+        router?.pop()
+    }
 }

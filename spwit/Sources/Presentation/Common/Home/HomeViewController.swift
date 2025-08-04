@@ -7,12 +7,6 @@
 
 import UIKit
 
-protocol HomeViewProtocol: AnyObject {
-    func showWelcomeMessages()
-    func showGroupList()
-    func hideWelcomeMessages()
-}
-
 class HomeViewController: UIViewController, HomeViewProtocol {
     func showWelcomeMessages() {
         welcomeStackView.isHidden = false
@@ -178,6 +172,33 @@ class HomeViewController: UIViewController, HomeViewProtocol {
         scroll.showsVerticalScrollIndicator = false
         return scroll
     }()
+    
+    private let loadingOverlay: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor.darkBlue
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.isHidden = true
+        return view
+    }()
+
+    private let activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.color = .lightGreen
+        indicator.hidesWhenStopped = true
+        indicator.translatesAutoresizingMaskIntoConstraints = false
+        return indicator
+    }()
+    
+    private let errorLabel: UILabel = {
+        let label = UILabel()
+        label.textColor = .white
+        label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.isHidden = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -185,7 +206,11 @@ class HomeViewController: UIViewController, HomeViewProtocol {
         presenter?.viewDidLoad()
         setupLayout()
         setupTapGesture()
-        showGroupCards()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        presenter?.fetchGroups()    // or whatever your “load data” call is
     }
 
     private func setupLayout() {
@@ -209,6 +234,11 @@ class HomeViewController: UIViewController, HomeViewProtocol {
         welcomeStackView.addArrangedSubview(subtitleLabel)
         
         scrollView.addSubview(groupCardsStackView)
+        
+        view.addSubview(loadingOverlay)
+        loadingOverlay.addSubview(activityIndicator)
+        
+        view.addSubview(errorLabel)
         
         NSLayoutConstraint.activate([
             headerStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
@@ -238,66 +268,20 @@ class HomeViewController: UIViewController, HomeViewProtocol {
             addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             addButton.bottomAnchor.constraint(
                 equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-        ])
-    }
-    
-    private func showGroupCards() {
-        groupCardsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        // dummy group cards
-        let card1 = GroupCardView()
-        card1.configure(with: .init(
-            groupName: "🇯🇵 Bismillah OTW Jepang",
-            memberCount: 4,
-            statusText: "Settled",
-            statusAmount: nil,
-            statusType: .settled
-        ))
-        let card2 = GroupCardView()
-        card2.configure(with: .init(
-            groupName: "Tukang Tambal Ban",
-            memberCount: 4,
-            statusText: "You lent",
-            statusAmount: "Rp100.000",
-            statusType: .lent
-        ))
-        let card3 = GroupCardView()
-        card3.configure(with: .init(
-            groupName: "Singapur Lesgo?",
-            memberCount: 4,
-            statusText: "You owe",
-            statusAmount: "Rp500.000",
-            statusType: .owe
-        ))
-        let card4 = GroupCardView()
-        card4.configure(with: .init(
-            groupName: "Singapur j?",
-            memberCount: 4,
-            statusText: "You owe",
-            statusAmount: "Rp500.000",
-            statusType: .owe
-        ))
-        let card5 = GroupCardView()
-        card5.configure(with: .init(
-            groupName: "Singapur j?",
-            memberCount: 4,
-            statusText: "You owe",
-            statusAmount: "Rp500.000",
-            statusType: .owe
-        ))
-        let card6 = GroupCardView()
-        card6.configure(with: .init(
-            groupName: "Singapur j?",
-            memberCount: 4,
-            statusText: "You owe",
-            statusAmount: "Rp500.000",
-            statusType: .owe
-        ))
+            
+            loadingOverlay.topAnchor.constraint(equalTo: view.topAnchor),
+              loadingOverlay.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+              loadingOverlay.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+              loadingOverlay.trailingAnchor.constraint(equalTo: view.trailingAnchor),
 
-        [card1, card2, card3, card4, card5, card6].forEach { groupCardsStackView.addArrangedSubview($0) }
-        
-        // Show group list and hide welcome message
-        showGroupList()
+              activityIndicator.centerXAnchor.constraint(equalTo: loadingOverlay.centerXAnchor),
+              activityIndicator.centerYAnchor.constraint(equalTo: loadingOverlay.centerYAnchor),
+            
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+               errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+               errorLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 32),
+               errorLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -32)
+        ])
     }
     
     private func showEmptyState() {
@@ -318,6 +302,98 @@ class HomeViewController: UIViewController, HomeViewProtocol {
     }
     @objc func profileTapped() {
         presenter?.didTapProfileButton()
+    }
+    
+    func showResult(from entity: GroupsEntity) {
+        // Update summary labels
+        lentAmountLabel.text = entity.overallSummary.youAreOwed.formattedRupiah
+        oweAmountLabel.text = entity.overallSummary.youOwe.formattedRupiah
+
+        // Clear existing cards
+        groupCardsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+
+        // Handle empty state
+        if entity.groups.isEmpty {
+            showEmptyState()
+            return
+        }
+
+        for group in entity.groups {
+            let statusType: GroupCardStatus
+            let statusText: String
+            let statusAmount: String?
+
+            switch group.status {
+            case "settled":
+                statusType = .settled
+                statusText = "Settled"
+                statusAmount = nil
+            case "you_are_owed":
+                statusType = .lent
+                statusText = "You lent"
+                statusAmount = group.amount.formattedRupiah
+            case "you_owe":
+                statusType = .owe
+                statusText = "You owe"
+                statusAmount = group.amount.formattedRupiah
+            default:
+                statusType = .settled
+                statusText = "Settled"
+                statusAmount = nil
+            }
+
+            let model = GroupCardModel(
+                groupName: group.groupName,
+                memberCount: group.members.count,
+                statusText: statusText,
+                statusAmount: statusAmount,
+                statusType: statusType
+            )
+
+            let cardView = GroupCardView()
+            cardView.configure(with: model)
+            groupCardsStackView.addArrangedSubview(cardView)
+        }
+
+        // Show the list
+        showGroupList()
+    }
+    
+    func showError(_ error: Error) {
+        headerStackView.isHidden = false
+        financialSummaryStackView.isHidden = true
+        welcomeStackView.isHidden = true
+        scrollView.isHidden = true
+        addButton.isHidden = true
+
+        errorLabel.text = error.localizedDescription
+        errorLabel.isHidden = false
+
+        loadingOverlay.isHidden = true
+        activityIndicator.stopAnimating()
+    }
+    
+    func showLoading() {
+        headerStackView.isHidden = false
+        financialSummaryStackView.isHidden = true
+        welcomeStackView.isHidden = true
+        scrollView.isHidden = true
+        addButton.isHidden = true
+        errorLabel.isHidden = true // hide error if showing before
+
+        loadingOverlay.isHidden = false
+        activityIndicator.startAnimating()
+    }
+
+    func hideLoading() {
+        headerStackView.isHidden = false
+        financialSummaryStackView.isHidden = false
+        scrollView.isHidden = false
+        addButton.isHidden = false
+        errorLabel.isHidden = true
+
+        loadingOverlay.isHidden = true
+        activityIndicator.stopAnimating()
     }
 }
 

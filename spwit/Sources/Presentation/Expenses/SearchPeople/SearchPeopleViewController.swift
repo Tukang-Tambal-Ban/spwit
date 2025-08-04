@@ -1,37 +1,17 @@
 import UIKit
 
-struct GroupSection {
-    let title: String
-    let items: [String]
-    var isExpanded: Bool
-    var selectedIndices: Set<Int>
-}
-
-class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    
+class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate, SearchPeopleViewProtocol {
     var presenter: SearchPeoplePresenter?
     
-    var sections: [GroupSection] = [
-        GroupSection(
-            title: "People on Spwiwit",
-            items: ["Adit Lucu", "Raiza Rawr", "Tyara UwU", "Syatria Ripki"],
-            isExpanded: true,
-            selectedIndices: []
-        ),
-        GroupSection(
-            title: "Groups",
-            items: ["Group A", "Tukang Tambal Ban", "Tambal Sandal", "Tukang Mancing"],
-            isExpanded: false,
-            selectedIndices: []
-        ),
-
-    ]
-    
-    let tableView = UITableView()
+    private let tableView = UITableView()
+    private let activityIndicator = UIActivityIndicatorView(style: .large)
+    private var searchBar: UISearchBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupActivityIndicator()
+        presenter?.fetchSuggestedUsers()
     }
     
     func setupUI() {
@@ -66,15 +46,17 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
             target: self,
             action: #selector(addTapped)
         )
+        addButton.isEnabled = false
         navigationItem.rightBarButtonItem = addButton
         
         // --- Search Bar ---
-        let searchBar = UISearchBar()
+        searchBar = UISearchBar()
         searchBar.translatesAutoresizingMaskIntoConstraints = false
+        searchBar.delegate = self
         let attributes: [NSAttributedString.Key: Any] = [
             .foregroundColor: UIColor.textGrey
         ]
-        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "SearchPeople", attributes: attributes)
+        searchBar.searchTextField.attributedPlaceholder = NSAttributedString(string: "Search People", attributes: attributes)
         searchBar.searchTextField.leftView?.tintColor = .textGrey
         searchBar.searchTextField.backgroundColor = .transparantGrey
         searchBar.tintColor = .darkBlue
@@ -104,14 +86,22 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
         ])
     }
     
-    // MARK: - TableView DataSource & Delegate
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return sections.count
+    private func setupActivityIndicator() {
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.hidesWhenStopped = true
+        view.addSubview(activityIndicator)
+        NSLayoutConstraint.activate([
+            activityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            activityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
     }
     
+    // MARK: - TableView DataSource & Delegate
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return sections[section].isExpanded ? sections[section].items.count : 0
+        // If there's a search query, show searchedUsers, otherwise suggestedUsers
+        let searchText = searchBar.text ?? ""
+        return (searchText.isEmpty ? presenter?.suggestedUsers.count : presenter?.searchedUsers.count) ?? 0
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -122,8 +112,10 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
         let cell = tableView.dequeueReusableCell(withIdentifier: "MemberCell") ?? UITableViewCell(style: .default, reuseIdentifier: "MemberCell")
         cell.contentView.subviews.forEach { $0.removeFromSuperview() }
         
-        let item = sections[indexPath.section].items[indexPath.row]
-        let isSelected = sections[indexPath.section].selectedIndices.contains(indexPath.row)
+        let users = (searchBar.text?.isEmpty ?? true) ? presenter?.suggestedUsers : presenter?.searchedUsers
+        let user = users?[indexPath.row]
+        let item = user?.username ?? ""
+        let isSelected = presenter?.selectedUsers.contains(where: { $0.id == user?.id }) ?? false
         let initialsBgColor: UIColor = isSelected ? .lightGreen : .grey
         let initialsTextColor: UIColor = isSelected ? .darkBlue : .black
         
@@ -175,39 +167,21 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
         return cell
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let header = UIButton(type: .system)
-        header.backgroundColor = .clear
-        header.setTitle(sections[section].title, for: .normal)
-        header.setTitleColor(.lightGreen, for: .normal)
-        header.titleLabel?.font = Fonts.callout.bold
-        header.contentHorizontalAlignment = .left
-        header.tag = section
-        header.addTarget(self, action: #selector(toggleSection(_:)), for: .touchUpInside)
-        let arrow = UIImageView(image: UIImage(systemName: sections[section].isExpanded ? "chevron.down" : "chevron.right"))
-        arrow.tintColor = .lightGreen
-        arrow.translatesAutoresizingMaskIntoConstraints = false
-        header.addSubview(arrow)
-        NSLayoutConstraint.activate([
-            arrow.centerYAnchor.constraint(equalTo: header.centerYAnchor),
-            arrow.trailingAnchor.constraint(equalTo: header.trailingAnchor, constant: -12)
-        ])
-        return header
-    }
-    
-    @objc func toggleSection(_ sender: UIButton) {
-        let section = sender.tag
-        sections[section].isExpanded.toggle()
-        tableView.reloadSections([section], with: .automatic)
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if sections[indexPath.section].selectedIndices.contains(indexPath.row) {
-            sections[indexPath.section].selectedIndices.remove(indexPath.row)
-        } else {
-            sections[indexPath.section].selectedIndices.insert(indexPath.row)
+        let users = (searchBar.text?.isEmpty ?? true) ? presenter?.suggestedUsers : presenter?.searchedUsers
+        if let user = users?[indexPath.row] {
+            presenter?.toggleSelectedUser(with: user)
         }
         tableView.reloadRows(at: [indexPath], with: .none)
+    }
+    
+    // MARK: - SearchBar Delegate
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if let text = searchBar.text, !text.isEmpty {
+            presenter?.searchUsers(query: text)
+        } else {
+            presenter?.fetchSuggestedUsers()
+        }
     }
     
     // MARK: - Navigation Actions
@@ -219,19 +193,31 @@ class SearchPeopleViewController: UIViewController, UITableViewDataSource, UITab
     @objc func addTapped() {
         presenter?.didAddTapped()
     }
-}
-
-// MARK: - SwiftUI Preview (Jika Perlu)
-import SwiftUI
-struct SearchPeople_Preview: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> some UIViewController {
-        SearchPeopleViewController()
+    
+    // MARK: - SearchPeopleViewProtocol
+    func showSuggestedUsers(_ users: [User]) {
+        tableView.reloadData()
     }
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {}
-}
-
-struct SearchPeople_PreviewProvider: PreviewProvider {
-    static var previews: some View {
-        SearchPeople_Preview()
+    
+    func showSearchUsers(_ users: [User]) {
+        tableView.reloadData()
+    }
+    
+    func showSelectedUsers(_ users: [User]) {
+        navigationItem.rightBarButtonItem?.isEnabled = !users.isEmpty
+    }
+    
+    func showError(_ error: Error) {
+        let alert = UIAlertController(title: "Error", message: error.localizedDescription, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    func showLoading() {
+        activityIndicator.startAnimating()
+    }
+    
+    func hideLoading() {
+        activityIndicator.stopAnimating()
     }
 }

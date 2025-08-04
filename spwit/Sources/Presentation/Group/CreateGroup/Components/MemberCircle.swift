@@ -53,14 +53,14 @@ final class MemberCircleView: UIView {
 final class NearbyUserView: UIView {
     private let avatar: AvatarCircle
     private let nameLabel: UILabel
-    private let userName: String
+    private let _user: User
 
-    init(name: String, diameter: CGFloat = 56, bgColor: UIColor = .grey) {
-        self.userName = name
-        self.avatar = AvatarCircle.fromName(name, diameter: diameter, bgColor: bgColor)
+    init(user: User, diameter: CGFloat = 56, bgColor: UIColor = .grey) {
+        self._user = user
+        self.avatar = AvatarCircle.fromName(user.name, diameter: diameter, bgColor: bgColor)
 
         self.nameLabel = UILabel()
-        self.nameLabel.text = name
+        self.nameLabel.text = user.name
         self.nameLabel.applyStyle(Fonts.caption1.medium, color: .white)
         self.nameLabel.textAlignment = .center
         self.nameLabel.adjustsFontSizeToFitWidth = true
@@ -88,8 +88,8 @@ final class NearbyUserView: UIView {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    var name: String {
-        return userName
+    var user: User {
+        return _user
     }
 }
 

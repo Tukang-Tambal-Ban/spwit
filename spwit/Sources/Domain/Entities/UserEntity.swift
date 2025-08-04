@@ -15,18 +15,22 @@
 
 import Foundation
 
-struct SuggestedUserEntity: Equatable {
+struct User: Equatable, Hashable {
     let id: String
     let name: String
+    let username: String
+    let appleID: String
+    let email: String
+    let createdAt: Date
 
-    static func fromDTO(_ dto: SuggestedUsersResponse.SuggestedUser) -> SuggestedUserEntity {
-        return SuggestedUserEntity(
+    static func fromDTO(_ dto: UserResponse) -> User {
+        return User(
             id: dto.id,
-            name: dto.name
+            name: dto.name,
+            username: dto.username,
+            appleID: dto.appleId ?? "",
+            email: dto.email ?? "",
+            createdAt: Date(timeIntervalSince1970: TimeInterval(dto.createdAt) ?? 0)
         )
-    }
-
-    static func listFromDTO(_ dto: SuggestedUsersResponse) -> [SuggestedUserEntity] {
-        return dto.suggestedUsers.map { SuggestedUserEntity.fromDTO($0) }
     }
 }

@@ -8,12 +8,6 @@
 
 import UIKit
 
-protocol SignInViewProtocol: AnyObject {
-    func showResult(from entity: SignInEntity)
-    func showError(_ error: Error)
-    func showLoading()
-    func hideLoading()
-}
 class SignInViewController: UIViewController, SignInViewProtocol {
     var presenter: SignInPresenterProtocol?
     private var appleSignInService: AppleSignInService?
@@ -93,10 +87,6 @@ class SignInViewController: UIViewController, SignInViewProtocol {
     @objc private func signInTapped() {
         appleSignInService = AppleSignInService(delegate: self, presentationAnchor: view.window)
           appleSignInService?.startSignInWithAppleFlow()
-    }
-
-    func showResult(from entity: SignInEntity) {
-        presenter?.navigateToHome(signInEntity: entity)
     }
 
     func showError(_ error: Error) {

@@ -7,10 +7,19 @@
 import UIKit
 
 protocol HomeInteractorProtocol: AnyObject {
-    func fetchInitialState()
+    func fetchGroups(completion: @escaping (Result<GroupsEntity, Error>) -> Void)
 }
 class HomeInteractor: HomeInteractorProtocol {
-    func fetchInitialState() {
-        //        fetch data from api
+    private let groupUsecase: GroupUsecase
+
+    init(groupUsecase: GroupUsecase) {
+        self.groupUsecase = groupUsecase
+    }
+
+    func fetchGroups(completion: @escaping (Result<GroupsEntity, Error>) -> Void) {
+        Task {
+            let result = await groupUsecase.getGroups()
+            completion(result)
+        }
     }
 }

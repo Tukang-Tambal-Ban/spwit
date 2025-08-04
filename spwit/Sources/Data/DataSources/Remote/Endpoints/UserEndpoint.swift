@@ -18,6 +18,7 @@ import Alamofire
 
 enum UserEndpoint {
     case getSuggestedUsers
+    case getUsers
 }
 
 extension UserEndpoint: EndPointType {
@@ -34,13 +35,15 @@ extension UserEndpoint: EndPointType {
     var path: String {
         switch self {
         case .getSuggestedUsers:
-            return "/suggested-users"
+                return "/suggested-users"
+        case .getUsers:
+            return ""
         }
     }
 
     var httpMethod: HTTPMethod {
         switch self {
-        case .getSuggestedUsers: return .get
+        case .getSuggestedUsers, .getUsers: return .get
         }
     }
 
@@ -60,6 +63,9 @@ extension UserEndpoint: EndPointType {
     }
 
     var encoder: ParameterEncoder {
-        return JSONParameterEncoder.default
+        switch self {
+        case .getSuggestedUsers, .getUsers:
+            return URLEncodedFormParameterEncoder.default
+        }
     }
 }

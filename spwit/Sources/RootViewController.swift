@@ -26,18 +26,15 @@ class RootViewController: UIViewController, RouterInjectable {
     private func toInitialPage() {
         guard let sceneNavigator = router else { return }
 
-//        if SessionManager.shared.isUserLoggedIn(),
-//            let user = SessionManager.shared.getSignedInUser()
-//        {
-//            let homeVC = HomeRouter.createModule(router: sceneNavigator, for: user)
-//            sceneNavigator.setRootViewController(homeVC)
-//        } else {
-//            let signInViewController = SignInRouter.createModule(router: sceneNavigator)
-//            sceneNavigator.setRootViewController(signInViewController)
-//        }
-        
-        let homeVC = HomeRouter.createModule(router: sceneNavigator )
-        sceneNavigator.setRootViewController(homeVC)
+        if SessionManager.shared.isUserLoggedIn(),
+            let user = SessionManager.shared.getSignedInUser()
+        {
+            let homeVC = HomeRouter.createModule(router: sceneNavigator)
+            sceneNavigator.setRootViewController(homeVC)
+        } else {
+            let signInViewController = SignInRouter.createModule(router: sceneNavigator)
+            sceneNavigator.setRootViewController(signInViewController)
+        }
     }
 
 }

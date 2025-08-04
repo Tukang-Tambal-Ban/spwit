@@ -54,10 +54,10 @@ class GroupCardView: UIView {
         memberCountLabel.translatesAutoresizingMaskIntoConstraints = false
         
         // Status
-        statusLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        statusLabel.applyStyle(Fonts.caption2.regular, color: .white)
         statusLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        statusAmountLabel.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        statusAmountLabel.applyStyle(Fonts.callout.semibold)
         statusAmountLabel.translatesAutoresizingMaskIntoConstraints = false
         
         statusCheckIcon.image = UIImage(systemName: "checkmark.circle.fill")
@@ -105,7 +105,7 @@ class GroupCardView: UIView {
         ])
     }
     
-    func configure(with viewModel: GroupCardViewModel) {
+    func configure(with viewModel: GroupCardModel) {
         // Generate initials from group name
         let initials = viewModel.groupName.split(separator: " ").compactMap { $0.first }.prefix(2).map { String($0) }.joined().uppercased()
         groupInitialsView.label.text = initials
@@ -130,14 +130,12 @@ class GroupCardView: UIView {
             statusCheckIcon.isHidden = false
         case .lent:
             statusLabel.text = "You lent"
-            statusLabel.textColor = UIColor.lightGreen
             statusAmountLabel.text = viewModel.statusAmount
             statusAmountLabel.textColor = UIColor.lightGreen
             statusLabel.isHidden = false
             statusAmountLabel.isHidden = false
         case .owe:
             statusLabel.text = "You owe"
-            statusLabel.textColor = UIColor.orange
             statusAmountLabel.text = viewModel.statusAmount
             statusAmountLabel.textColor = UIColor.orange
             statusLabel.isHidden = false

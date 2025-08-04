@@ -13,7 +13,7 @@ final class DIContainer {
     lazy var authUsecase: AuthUsecase = AuthUsecaseImpl(authRepository: authRepository, persistanceRepo: persistenceRepository)
     
     lazy var groupRepository: GroupRepository = GroupRepositoryImpl()
-    lazy var groupUsecase: GroupUsecase = GroupUsecaseImpl(repository: groupRepository)
+    lazy var groupUsecase: GroupUsecase = GroupUsecaseImpl(repository: groupRepository, persistenceRepo: persistenceRepository)
     
     lazy var userRepository: UserRepository = UserRepositoryImpl()
     lazy var userUsecase: UserUsecase = UserUsecaseImpl(repository: userRepository)

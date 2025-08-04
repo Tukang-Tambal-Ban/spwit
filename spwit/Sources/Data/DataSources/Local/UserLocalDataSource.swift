@@ -11,7 +11,7 @@ import UIKit
 
 protocol UserLocalDataSourceProtocol {
     func saveUser(_ entity: SignInEntity)
-    func getUser() -> SignInEntity?
+    func getUser() -> UserEntity?
     func deleteUser()
 }
 
@@ -33,17 +33,10 @@ class CoreDataUserDataSource: UserLocalDataSourceProtocol {
         try? context.save()
     }
 
-    func getUser() -> SignInEntity? {
+    func getUser() -> UserEntity? {
         let fetch = UserEntity.fetchRequest()
         if let result = try? context.fetch(fetch), let user = result.first {
-            return SignInEntity(
-                token: user.token ?? "",
-                userId: user.id ?? "",
-                appleId: user.appleId ?? "",
-                email: user.email ?? "",
-                username: user.username ?? "",
-                name: user.name ?? ""
-            )
+            return user
         }
         return nil
     }
