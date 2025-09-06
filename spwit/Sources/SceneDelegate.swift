@@ -22,6 +22,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //        window?.makeKeyAndVisible()
 //    }
     
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
@@ -42,7 +43,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         navigationController.viewControllers = [rootViewController]
 //        let nav = UINavigationController(rootViewController: AddMemberViewController())
         // Set the navigation controller as the window's root view controller
-        window?.rootViewController = navigationController
+        window?.rootViewController = PeerRouter.createModule()
+
+//        window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
 
